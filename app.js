@@ -1,8 +1,14 @@
+'use strict';
+const PORT = 1234;
+var os = require('os');
+var ifaces = os.networkInterfaces();
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser')
-var server = require('http').createServer(app).listen(1234);
+var server = require('http').createServer(app).listen(PORT);
+var io = require('socket.io')(server);
 const fileUpload = require('express-fileupload');
+var localIp;
 //var portName = process.argv[2]; // 2do argumento de la llamada!
 
 
@@ -23,6 +29,17 @@ app.get('/', function(req, res)
   res.sendFile(__dirname + '/index.html');
 });
 
+
+io.on('connection', function (socket)
+{
+  console.log("Connected!");
+  socket.emit('happy testing', { url: "http://"+localIp+":"+PORT }); // 1234 es el PUERTO!
+  socket.on('disconnect',function () {
+    console.log('desconectado!');
+  });
+});
+
+
 app.post('/upload', function(req, res)
 {
 
@@ -42,5 +59,33 @@ app.post('/upload', function(req, res)
       return res.status(500).send(err);
 
     res.status(200).json({success:true});
+  });
+});
+
+Object.keys(ifaces).forEach(function (ifname)
+{
+  var alias = 0;
+
+  ifaces[ifname].forEach(function (iface)
+  {
+    if ('IPv4' !== iface.family || iface.internal !== false) {
+      // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+      return;
+    }
+
+    if (alias >= 1)
+    {
+      // this single interface has multiple ipv4 addresses
+      console.log(ifname + ':' + alias, iface.address);
+      localIp = iface.address;
+    }
+    else
+    {
+      // this interface has only one ipv4 adress
+      console.log(ifname, iface.address);
+      localIp = iface.address;
+
+    }
+    ++alias;
   });
 });
