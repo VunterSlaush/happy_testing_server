@@ -7,7 +7,9 @@ var app = express();
 var bodyParser = require('body-parser')
 var server = require('http').createServer(app).listen(PORT);
 var io = require('socket.io')(server);
+var models  = require('./models');
 const fileUpload = require('express-fileupload');
+
 var localIp;
 //var portName = process.argv[2]; // 2do argumento de la llamada!
 
@@ -59,6 +61,19 @@ app.post('/upload', function(req, res)
       return res.status(500).send(err);
 
     res.status(200).json({success:true});
+  });
+});
+
+app.post('/createRandomUser',function (req,res)
+{
+  models.User.create
+  ({
+    username: req.body.username,
+    password: req.body.password,
+    nombre:   req.body.nombre,
+  }).then(function(data)
+  {
+    res.json(data);
   });
 });
 

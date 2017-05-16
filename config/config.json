@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "happy_tester",
+    "password": "happy_test",
+    "database": "happy_testing",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "happy_tester",
+    "password": "happy_test",
+    "database": "happy_testing",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "happy_tester",
+    "password": "happy_test",
+    "database": "happy_testing",
+    "host": "localhost",
+    "dialect": "postgres"
+  }
+}
