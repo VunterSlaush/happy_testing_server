@@ -1,15 +1,18 @@
 "use strict";
+var encrypter = require('../services/encrypt');
 
 module.exports = function(sequelize, DataTypes)
 {
-  var User = sequelize.define("usuarios",
+  var User = sequelize.define("User",
   {
-    id:{DataTypes.STRING, primaryKey:true, autoIncrement:true},
-    username: {type: DataTypes.STRING, unique:true},
-    password: DataTypes.STRING,
+    id:{type: DataTypes.INTEGER, primaryKey:true, autoIncrement:true},
+    username: {type: DataTypes.STRING, unique:true, allowNull: false},
+    password: {type: DataTypes.STRING, allowNull: false},
     nombre: DataTypes.STRING
+
   },
   {
+    tableName: 'usuarios',
     classMethods:
     {
       associate: function(models)
@@ -25,6 +28,13 @@ module.exports = function(sequelize, DataTypes)
           foreignKey: 'usuario',
           constraints: false
         });
+      }
+    },
+    hooks:
+    {
+      beforeCreate: function (user,options)
+      {
+          user.password = encrypter.encrypt(user.password);
       }
     }
   });

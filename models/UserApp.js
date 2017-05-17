@@ -2,31 +2,31 @@
 
 module.exports = function(sequelize, DataTypes)
 {
-  var UserApp = sequelize.define("usuario_aplicacion",
+  var UserApp = sequelize.define("UserApp",
   {
-    id:{DataTypes.STRING, primaryKey:true, autoIncrement:true},
+    id:{ type: DataTypes.INTEGER, primaryKey:true, autoIncrement:true},
     aplicacion:
     {
-       type: Sequelize.INTEGER,
+       type: DataTypes.INTEGER,
 
        references: {
-         model: App,
-         key: 'id',
-         deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
+         model: "aplicaciones",
+         key: 'id'
        }
     },
    usuario:
    {
-      type: Sequelize.INTEGER,
+      type: DataTypes.INTEGER,
 
       references: {
-        model: User,
-        key: 'id',
-        deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
+        model: "usuarios",
+        key: 'id'
       }
     },
+
   },
   {
+      tableName: 'usuario_aplicacion',
       classMethods:
       {
         associate: function(models)

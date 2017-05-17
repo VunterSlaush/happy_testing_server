@@ -4,10 +4,10 @@ var os = require('os');
 var ifaces = os.networkInterfaces();
 var express = require('express');
 var app = express();
+var fs = require('fs');
 var bodyParser = require('body-parser')
 var server = require('http').createServer(app).listen(PORT);
 var io = require('socket.io')(server);
-var models  = require('./models');
 const fileUpload = require('express-fileupload');
 
 var localIp;
@@ -26,11 +26,11 @@ app.use(function(err, req, res, next) { // Acciones en caso de un error inespera
 });
 
 app.use(fileUpload());
+
 app.get('/', function(req, res)
 {
   res.sendFile(__dirname + '/index.html');
 });
-
 
 io.on('connection', function (socket)
 {
@@ -42,13 +42,22 @@ io.on('connection', function (socket)
 });
 
 
+//Esto carga todas las rutas dinamicamente!
+fs.readdirSync('./routes').forEach(function (file)
+{
+  if(file.substr(-3) == '.js')
+  {
+      require('./routes/' + file)(app);
+  }
+});
+
+
 app.post('/upload', function(req, res)
 {
 
   if (!req.files)
     return res.status(400).send('No files were uploaded.');
 
-  // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
   let sampleFile = req.files.file1;
 
   console.log(req.files);
@@ -64,18 +73,6 @@ app.post('/upload', function(req, res)
   });
 });
 
-app.post('/createRandomUser',function (req,res)
-{
-  models.User.create
-  ({
-    username: req.body.username,
-    password: req.body.password,
-    nombre:   req.body.nombre,
-  }).then(function(data)
-  {
-    res.json(data);
-  });
-});
 
 Object.keys(ifaces).forEach(function (ifname)
 {
@@ -83,14 +80,11 @@ Object.keys(ifaces).forEach(function (ifname)
 
   ifaces[ifname].forEach(function (iface)
   {
-    if ('IPv4' !== iface.family || iface.internal !== false) {
-      // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+    if ('IPv4' !== iface.family || iface.internal !== false)
       return;
-    }
 
     if (alias >= 1)
     {
-      // this single interface has multiple ipv4 addresses
       console.log(ifname + ':' + alias, iface.address);
       localIp = iface.address;
     }
@@ -99,7 +93,6 @@ Object.keys(ifaces).forEach(function (ifname)
       // this interface has only one ipv4 adress
       console.log(ifname, iface.address);
       localIp = iface.address;
-
     }
     ++alias;
   });

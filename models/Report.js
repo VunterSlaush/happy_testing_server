@@ -2,13 +2,14 @@
 
 module.exports = function(sequelize, DataTypes)
 {
-  var Report = sequelize.define("reportes",
+  var Report = sequelize.define("Report",
   {
-    id:{DataTypes.STRING, primaryKey:true, autoIncrement:true},
-    nombre: { type: Sequelize.STRING, allowNull: false},
-    createdAt: { type: Sequelize.DATE, defaultValue: Sequelize.NOW },
+    id:{ type:DataTypes.INTEGER, primaryKey:true, autoIncrement:true},
+    nombre: { type: DataTypes.STRING, allowNull: false},
+    createdAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
   },
   {
+    tableName: 'reportes',
     classMethods:
     {
       associate: function(models)

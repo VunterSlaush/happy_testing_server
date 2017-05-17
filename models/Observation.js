@@ -2,12 +2,14 @@
 
 module.exports = function(sequelize, DataTypes)
 {
-  var Observation = sequelize.define("observaciones",
+  var Observation = sequelize.define("Observation",
   {
-    id:{DataTypes.STRING, primaryKey:true, autoIncrement:true},
-    texto: { type: Sequelize.STRING, allowNull: false}
+    id:{ type:DataTypes.INTEGER, primaryKey:true, autoIncrement:true},
+    texto: { type: DataTypes.STRING, allowNull: false},
+
   },
   {
+    tableName: 'observaciones',
     classMethods:
     {
       associate: function(models)

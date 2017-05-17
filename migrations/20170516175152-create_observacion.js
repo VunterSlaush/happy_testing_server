@@ -12,7 +12,8 @@ module.exports = {
       },
       texto:
       {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       createdAt: {
         type: Sequelize.DATE
@@ -23,6 +24,7 @@ module.exports = {
       reporte:
       {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references:
         {
           model: 'reportes',

@@ -2,12 +2,14 @@
 
 module.exports = function(sequelize, DataTypes)
 {
-  var Image = sequelize.define("imagenes",
+  var Image = sequelize.define("Image",
   {
-    id:{DataTypes.STRING, primaryKey:true, autoIncrement:true},
-    direccion: { type: Sequelize.STRING, allowNull: false}
+    id:{ type:DataTypes.INTEGER, primaryKey:true, autoIncrement:true},
+    direccion: { type: DataTypes.STRING, allowNull: false},
+
   },
   {
+      tableName: 'imagenes',
       classMethods:
       {
         associate: function(models)

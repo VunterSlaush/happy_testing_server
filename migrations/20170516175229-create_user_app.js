@@ -19,6 +19,7 @@ module.exports = {
       aplicacion:
       {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references:
         {
           model: 'aplicaciones',
@@ -30,6 +31,7 @@ module.exports = {
       usuario:
       {
        type: Sequelize.INTEGER,
+       allowNull: false,
        references:
        {
          model: 'usuarios',

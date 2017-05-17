@@ -2,10 +2,11 @@
 
 module.exports = function(sequelize, DataTypes)
 {
-  var Aplicacion = sequelize.define("aplicaciones",
+  var Aplicacion = sequelize.define("App",
   {
-    id:{ DataTypes.STRING, primaryKey:true, autoIncrement:true},
-    nombre: DataTypes.STRING
+    id: { type: DataTypes.INTEGER, primaryKey:true, autoIncrement:true},
+    nombre: DataTypes.STRING,
+    tableName: 'aplicaciones'
   },
   {
     classMethods:
