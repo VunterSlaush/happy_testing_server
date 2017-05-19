@@ -13,24 +13,12 @@ module.exports =
           });
     },
 
-    login: function (user, res)
-    {
-       User.findOne({where: {username:user.username}})
-            .then(userFinded =>
-              {
-                if(encrypter.compare(userFinded.password,user.password))
-                  res.json({success:true, user:userFinded});
-                else
-                  res.json({success:false, error:"contaseña incorrecta"});
-             }).catch(error => { console.log(error); res.json({success:false, error:"usario no encontrado"})});
-    },
-
     delete: function(user, res)
     {
       consoe.log("NOT WORKING!");
     },
 
-    update: function( user, res)
+    update: function(user, res)
     {
       if(user.id)
       {
@@ -44,5 +32,38 @@ module.exports =
       {
         res.status(404).json({success:false, error:"no se puede updatear el usuario sin su identificador"});
       }
+    },
+
+    authStrategy: function (username, password, done)
+    {
+      User.findOne({where: {username:username}})
+          .then(userFinded => {
+
+               if(encrypter.compare(userFinded.password,password))
+                 return done(null, userFinded);
+               else
+                 return done(null, false, {success:false, error:"contaseña incorrecta"});
+      })
+        .catch(error => {
+
+        console.log(error);
+        return done(null, false, {success:false, error:"usario no encontrado"})
+      });
+    },
+
+    getApps: function (req, res)
+    {
+      if(req.user)
+        req.user.getApps().then(apps => res.json(apps));
+      else
+        res.json({success:false, error:"sesion no iniciada"});
+    },
+
+    getReports: function (req, res)
+    {
+      if(req.user)
+        req.user.getReports().then(reports => res.json(reports));
+      else
+        res.json({success:false, error:"sesion no iniciada"});
     }
 };

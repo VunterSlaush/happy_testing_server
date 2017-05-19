@@ -3,12 +3,18 @@ const PORT = 1234;
 var os = require('os');
 var ifaces = os.networkInterfaces();
 var express = require('express');
+var passport = require('passport');
 var app = express();
 var fs = require('fs');
 var bodyParser = require('body-parser')
 var server = require('http').createServer(app).listen(PORT);
 var io = require('socket.io')(server);
 const fileUpload = require('express-fileupload');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var User = require('./models').User;
+var LocalStrategy = require('passport-local').Strategy;
+var UserController = require('./controllers/User.js');
 
 var localIp;
 //var portName = process.argv[2]; // 2do argumento de la llamada!
@@ -22,10 +28,34 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 app.use(function(err, req, res, next) { // Acciones en caso de un error inesperado del parseo!
   console.error(err.stack);
-  res.status(500).json({success:"false", m:"Error general!"});
+  res.status(500).json({success:false, m:"Error Desconocido"});
 });
 
 app.use(fileUpload());
+
+app.use(require('connect-multiparty')());
+app.use(cookieParser());
+app.use(session({ secret: 'super-secret' }));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(function(username, password, done)
+{
+    UserController.authStrategy(username, password,done);
+}));
+
+passport.serializeUser(function(user, done) {
+    done(null, user.username);
+});
+
+passport.deserializeUser(function(username, done)
+{
+   User.findOne({where:{ username: username }}).then(function(user) {
+      done(null, user);
+    });
+});
+
 
 app.get('/', function(req, res)
 {
@@ -51,29 +81,7 @@ fs.readdirSync('./routes').forEach(function (file)
   }
 });
 
-
-app.post('/upload', function(req, res)
-{
-
-  if (!req.files)
-    return res.status(400).send('No files were uploaded.');
-
-  let sampleFile = req.files.file1;
-
-  console.log(req.files);
-
-  let path = 'C:/Users/user/Google\ Drive/'+sampleFile.name;
-
-  // Use the mv() method to place the file somewhere on your server
-  sampleFile.mv(path, function(err) {
-    if (err)
-      return res.status(500).send(err);
-
-    res.status(200).json({success:true});
-  });
-});
-
-
+//TODO mover esto a otro archivo ??
 Object.keys(ifaces).forEach(function (ifname)
 {
   var alias = 0;
@@ -90,7 +98,6 @@ Object.keys(ifaces).forEach(function (ifname)
     }
     else
     {
-      // this interface has only one ipv4 adress
       console.log(ifname, iface.address);
       localIp = iface.address;
     }

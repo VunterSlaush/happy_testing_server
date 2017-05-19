@@ -1,6 +1,5 @@
 "use strict";
 var encrypter = require('../services/encrypt');
-
 module.exports = function(sequelize, DataTypes)
 {
   var User = sequelize.define("User",
@@ -9,7 +8,6 @@ module.exports = function(sequelize, DataTypes)
     username: {type: DataTypes.STRING, unique:true, allowNull: false},
     password: {type: DataTypes.STRING, allowNull: false},
     nombre: DataTypes.STRING
-
   },
   {
     tableName: 'usuarios',
@@ -17,14 +15,15 @@ module.exports = function(sequelize, DataTypes)
     {
       associate: function(models)
       {
-        User.hasMany(models.App),
-        User.hasMany(models.Report),
+        User.hasMany(models.App,  {foreignKey: 'owner', sourceKey: 'id'}),
+        User.hasMany(models.Report, {foreignKey: 'owner', sourceKey: 'id'}),
         User.belongsToMany(models.App,
         {
           through: {
             model: models.UserApp,
             unique: false,
           },
+          as: 'canEditApps',
           foreignKey: 'usuario',
           constraints: false
         });

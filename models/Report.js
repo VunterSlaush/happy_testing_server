@@ -7,6 +7,15 @@ module.exports = function(sequelize, DataTypes)
     id:{ type:DataTypes.INTEGER, primaryKey:true, autoIncrement:true},
     nombre: { type: DataTypes.STRING, allowNull: false},
     createdAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+    aplicacion:
+    {
+       type: DataTypes.INTEGER,
+       references:
+       {
+         model: "aplicaciones",
+         key: 'id'
+       }
+    },
   },
   {
     tableName: 'reportes',

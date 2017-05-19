@@ -8,7 +8,6 @@ module.exports = function(sequelize, DataTypes)
     aplicacion:
     {
        type: DataTypes.INTEGER,
-
        references: {
          model: "aplicaciones",
          key: 'id'
@@ -17,7 +16,6 @@ module.exports = function(sequelize, DataTypes)
    usuario:
    {
       type: DataTypes.INTEGER,
-
       references: {
         model: "usuarios",
         key: 'id'
