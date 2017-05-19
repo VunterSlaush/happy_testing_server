@@ -35,6 +35,14 @@ module.exports = function(sequelize, DataTypes)
       {
           user.password = encrypter.encrypt(user.password);
       }
+    },
+
+    instanceMethods:
+    {
+     getAllMyApps: function (callback) // TODO
+      {
+        this.getApps().then(apps => {return apps});
+      }
     }
   });
   return User;

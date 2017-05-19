@@ -29,7 +29,8 @@ module.exports = function(sequelize, DataTypes)
       {
         associate: function(models)
         {
-
+          UserApp.belongsTo(models.App, {foreignKey: 'aplicacion', targetKey: 'id'}),
+          UserApp.belongsTo(models.User, {foreignKey: 'usuario', targetKey: 'id'})
         }
       }
     });

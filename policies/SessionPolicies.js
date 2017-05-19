@@ -7,7 +7,10 @@ module.exports =
     console.log("pasando por la politica:"+req.path);
     console.log("unsecure routes:",unsecureRoutes.routes.indexOf(req.path));
     if(req.user || unsecureRoutes.routes.indexOf(req.path) != -1)
+    {
+      console.log("pase la politica!");
       next();
+    }
     else
       res.json({success:false, error:"no hay sesion iniciada"});
   }

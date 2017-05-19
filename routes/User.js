@@ -31,4 +31,9 @@ module.exports = function(app)
     UserController.getReports(req,res);
   });
 
+  app.get('/users',function (req,res)
+  {
+    UserController.getAllUsers(req,res);
+  });
+
 }

@@ -37,20 +37,26 @@ module.exports =
     authStrategy: function (username, password, done)
     {
       User.findOne({where: {username:username}})
-          .then(userFinded => {
+          .then(userFinded =>
+            {
+              console.log("Encontre al usuario:"+userFinded);
+
                if(userFinded && encrypter.compare(userFinded.password,password))
-                 return done(null, userFinded);
+               {
+                  console.log("password correcta");
+                  return done(null, userFinded);
+               }
                else
                  return done(null, false, {success:false, error:"contaseña incorrecta"});
-      })
-        .catch(error => {
+       }).catch(error =>
+         {
 
         console.log("Error en authStrategy:"+error);
         return done(null, false, {success:false, error:"usario no encontrado"})
       });
     },
 
-    getApps: function (req, res)
+    getApps: function (req, res) // TODO myApps + CanEdiApps ..
     {
         req.user.getApps().then(apps => res.json(apps));
     },
@@ -58,5 +64,11 @@ module.exports =
     getReports: function (req, res)
     {
         req.user.getReports().then(reports => res.json(reports));
+    },
+
+    getAllUsers: function (req, res)
+    {
+        User.findAll({attributes: ['id', 'nombre','username']}).then(users => res.json({success:true, users:users}))
+                      .catch(error => res.json({success:false, error:"no se pudieron consultar usuarios"}));
     }
 };

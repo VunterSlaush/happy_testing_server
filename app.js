@@ -44,6 +44,7 @@ app.use(SessionPolicies.hasSession);
 
 passport.use(new LocalStrategy(function(username, password, done)
 {
+    console.log("entrando en login?")
     UserController.authStrategy(username, password,done);
 }));
 
