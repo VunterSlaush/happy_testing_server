@@ -8,7 +8,7 @@ module.exports =
           .then((userCreated) => res.json(userCreated))
           .catch((error) =>
           {
-            console.log(error);
+            console.log("Error Creando user:"+error);
             res.status(403).json({success:false, error:"usuario existente"});
           });
     },
@@ -18,11 +18,11 @@ module.exports =
       consoe.log("NOT WORKING!");
     },
 
-    update: function(user, res)
+    update: function(req, res)
     {
       if(user.id)
       {
-        User.update(user,{ where:{id:user.id}, fields: ['nombre','password'] }).then((userUpdated) => res.json(userUpdated))
+        User.update(req.body.user,{ where:{id:req.body.id}, fields: ['nombre','password'] }).then((userUpdated) => res.json(userUpdated))
         .catch((error) =>
         {
           res.status(403).json({success:false, error:"no se pudieron actualizar algunos campos"});
@@ -38,32 +38,25 @@ module.exports =
     {
       User.findOne({where: {username:username}})
           .then(userFinded => {
-
-               if(encrypter.compare(userFinded.password,password))
+               if(userFinded && encrypter.compare(userFinded.password,password))
                  return done(null, userFinded);
                else
                  return done(null, false, {success:false, error:"contaseña incorrecta"});
       })
         .catch(error => {
 
-        console.log(error);
+        console.log("Error en authStrategy:"+error);
         return done(null, false, {success:false, error:"usario no encontrado"})
       });
     },
 
     getApps: function (req, res)
     {
-      if(req.user)
         req.user.getApps().then(apps => res.json(apps));
-      else
-        res.json({success:false, error:"sesion no iniciada"});
     },
 
     getReports: function (req, res)
     {
-      if(req.user)
         req.user.getReports().then(reports => res.json(reports));
-      else
-        res.json({success:false, error:"sesion no iniciada"});
     }
 };

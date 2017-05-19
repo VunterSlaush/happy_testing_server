@@ -9,6 +9,7 @@ module.exports = function(app)
       UserController.create(req.body,res);
   });
 
+
   app.post('/login', passport.authenticate('local', {}),
   function(req, res)
   {
@@ -17,7 +18,7 @@ module.exports = function(app)
 
   app.put('/user', function(req, res)
   {
-      UserController.update(req.user,res);
+      UserController.update(req,res);
   });
 
   app.get('/user/apps',function (req,res)

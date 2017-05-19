@@ -1,8 +1,10 @@
 var AppController = require('../controllers/App.js');
+var SessionPolicies = require('../policies/SessionPolicies.js');
+
 
 module.exports = function(app)
 {
-
+  
   app.post('/apps/create', function(req, res)
   {
       AppController.create(req,res);

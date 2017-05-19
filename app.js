@@ -15,7 +15,7 @@ var session = require('express-session');
 var User = require('./models').User;
 var LocalStrategy = require('passport-local').Strategy;
 var UserController = require('./controllers/User.js');
-
+var SessionPolicies = require('./policies/SessionPolicies');
 var localIp;
 //var portName = process.argv[2]; // 2do argumento de la llamada!
 
@@ -26,6 +26,7 @@ app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
+
 app.use(function(err, req, res, next) { // Acciones en caso de un error inesperado del parseo!
   console.error(err.stack);
   res.status(500).json({success:false, m:"Error Desconocido"});
@@ -39,6 +40,7 @@ app.use(session({ secret: 'super-secret' }));
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(SessionPolicies.hasSession);
 
 passport.use(new LocalStrategy(function(username, password, done)
 {
@@ -56,11 +58,21 @@ passport.deserializeUser(function(username, done)
     });
 });
 
+//Esto carga todas las rutas dinamicamente!
+fs.readdirSync('./routes').forEach(function (file)
+{
+  if(file.substr(-3) == '.js')
+  {
+      require('./routes/' + file)(app);
+  }
+});
 
 app.get('/', function(req, res)
 {
   res.sendFile(__dirname + '/index.html');
 });
+
+
 
 io.on('connection', function (socket)
 {
@@ -72,14 +84,7 @@ io.on('connection', function (socket)
 });
 
 
-//Esto carga todas las rutas dinamicamente!
-fs.readdirSync('./routes').forEach(function (file)
-{
-  if(file.substr(-3) == '.js')
-  {
-      require('./routes/' + file)(app);
-  }
-});
+
 
 //TODO mover esto a otro archivo ??
 Object.keys(ifaces).forEach(function (ifname)

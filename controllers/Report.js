@@ -8,8 +8,6 @@ module.exports =
 {
     create: function (req, res)
     {
-      if(req.user)
-      {
         App.findOne({where:{id: req.body.aplicacion}}).then(app =>
           {
             if(app.canDoItSomething(req.user))
@@ -19,16 +17,10 @@ module.exports =
             else
                 res.json({success:false, error:"no tiene acceso a esta aplicacion"});
           }).catch(error => res.json({success:false, error:'aplicacion no encontrada'}));
-      }
-      else
-        res.json({success:false, error:"sesion no iniciada"});
-
     },
 
     delete: function(req, res)
     {
-      if(req.user)
-      {
         App.findOne({where:{id: req.body.aplicacion}}).then(app =>
           {
             if(app.isMyOwner(req.user))
@@ -38,9 +30,6 @@ module.exports =
             else
                 res.json({success:false, error:"no tiene acceso a esta aplicacion"});
           }).catch(error => res.json({success:false, error:'aplicacion no encontrada'}));
-      }
-      else
-        res.json({success:false, error:"sesion no iniciada"});
 
     },
 
