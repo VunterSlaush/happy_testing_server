@@ -4,5 +4,11 @@
     "/login",
     "/signup",
     "/reportes/create"
+  ],
+
+  "matches":
+  [
+    "storage",
+    "favicon"
   ]
 }

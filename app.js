@@ -34,12 +34,20 @@ app.use(function(err, req, res, next) { // Acciones en caso de un error inespera
 
 app.use(fileUpload());
 
-//app.use(require('connect-multiparty')());
+//app.use(require('connect-multiparty')()); TODO ¿Para que funciona esto?
 app.use(cookieParser());
 app.use(session({ secret: 'super-secret' }));
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.get('/', function(req, res)
+{
+  res.sendFile(__dirname + '/index.html');
+});
+
+app.use('/storage',express.static(__dirname +'/storage'));
+
 app.use(SessionPolicies.hasSession);
 
 passport.use(new LocalStrategy(function(username, password, done)
@@ -67,13 +75,6 @@ fs.readdirSync('./routes').forEach(function (file)
       require('./routes/' + file)(app);
   }
 });
-
-app.get('/', function(req, res)
-{
-  res.sendFile(__dirname + '/index.html');
-});
-
-
 
 io.on('connection', function (socket)
 {

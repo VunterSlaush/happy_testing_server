@@ -25,7 +25,7 @@ module.exports = function(sequelize, DataTypes)
       {
         Report.belongsTo(models.User,{foreignKey: 'owner', targetKey: 'id'}),
         Report.belongsTo(models.App, {foreignKey: 'aplicacion', targetKey: 'id'}),
-        Report.hasMany(models.Observation)
+        Report.hasMany(models.Observation,{foreignKey:'reporte', sourceKey:'id'})
       }
     }
   });

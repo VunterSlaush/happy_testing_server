@@ -3,8 +3,11 @@ var App = models.App;
 var Report = models.Report;
 var Imagen = models.Image;
 var Observation = models.Observation;
+var docManager = require('../services/writeDoc.js');
 var path = require('path');
 var mkdirp = require('mkdirp');
+var nodePath = __dirname.replace('\controllers','');
+
 
 module.exports =
 {
@@ -15,7 +18,7 @@ module.exports =
           {
             //if(app.canDoItSomething(req.user))
             //{
-            console.log("REQ",req);
+
               crearReporte(req,res);
             //}
           //  else
@@ -58,7 +61,9 @@ function crearReporte(req,res) // TODO testear esto
     {
       console.log("REPORTE CREADO?");
       procesarArchivos(req,reporte, (images) => procesarObservaciones(req,reporte, images,
-                                          () => res.json({success:true, res: reporte}))); // Muevo los Archivos de las imagenes a carpetas
+                                          () => { docManager.createDocFromReport(reporte,null);
+                                                  res.json({success:true, res: reporte});
+                                                })); // Muevo los Archivos de las imagenes a carpetas
 
     }).catch(error => {res.json({success:false, error:'error al crear reporte'}); console.log("ERROR REPORTE", error); });
 
@@ -71,10 +76,9 @@ function crearReporte(req,res) // TODO testear esto
 function procesarArchivos(req, reporte, callback)
 {
   req.body.images = JSON.parse(req.body.images);
-  console.log("PROCESANDO ARCHIVOS", req.files.length);
   let images = [];
   let errors = [];
-  let dir = __dirname+'/storage/apps/'+reporte.aplicacion+'/'+reporte.id+'/images/';
+  let dir = nodePath+'/storage/apps/'+reporte.aplicacion+'/'+reporte.id+'/images/';
   let filePath;
   var promises = [];
 
@@ -84,17 +88,17 @@ function procesarArchivos(req, reporte, callback)
     {
       Object.keys(req.files).forEach(function(k)
       {
-
-          console.log(k + ' - ' + req.files[k]);
           filePath = generatePath(dir,req.files[k].name, req)
-          promises.push(req.files[k].mv(filePath.direccion,function (error) {
-            console.log("Error insertando Archivo:",error);
+          promises.push(req.files[k].mv(filePath.direccionFisica,function (error)
+          {
+
           }));
           images.push(filePath);
       });
-      console.log("LLAMANDO A PROMISE ALL!!");
       Promise.all(promises).then(() => callback(images)).catch(error => console.log("ERROR", error));
     }
+    else
+      callback(null);
 
 });
 }
@@ -102,7 +106,6 @@ function procesarArchivos(req, reporte, callback)
 //TODO pensar en cambiar el PATH!
 function generatePath(dir,filename, req)
 {
-  console.log("ENTRANDO EN GENERATE PATH",req.body.images, filename);
   let dirName;
 
   for (var i = 0; i < req.body.images.length; i++)
@@ -110,7 +113,7 @@ function generatePath(dir,filename, req)
     if(req.body.images[i].name == filename)
     {
       dirName = dir + i + '-' + filename; // Directorio + posicion de la imagen en insercion + '-' + nombre imagen;
-      return {direccion:dirName,observacion:req.body.images[i].observacion};
+      return {direccionFisica:dirName,direccion:dirName.replace(nodePath,''),observacion:req.body.images[i].observacion};
     }
   }
   return {};
@@ -118,13 +121,11 @@ function generatePath(dir,filename, req)
 
 function procesarObservaciones(req, reporte, images, callback)
 {
-  console.log("Entrando en PROCESAR OBSERVACIONES", req.body.observaciones);
   let promises = [];
   req.body.observaciones = JSON.parse(req.body.observaciones);
   for (var i = 0; i < req.body.observaciones.length; i++)
   {
     let observationImages = findImages(images,req.body.observaciones[i].correlativo);
-    console.log('insertando observacion',req.body.observaciones[i].texto, observationImages);
     promises.push(Observation.create({reporte:reporte.id,
                                      texto: req.body.observaciones[i].texto,
                                      images: observationImages
@@ -132,7 +133,6 @@ function procesarObservaciones(req, reporte, images, callback)
                                       include:[{ model:Imagen, as: 'images'}]
                                    }));
   }
-  console.log("PROMISES ALL!");
   Promise.all(promises).then(() => callback()).catch(error => console.log("ERROR", error));
 }
 
@@ -149,7 +149,6 @@ function findImages(images, correlativo)
 
 function generateReportName(req)// TODO PENSAR ESTO BIEN!
 {
-    console.log("GENERANDO NOMBRE DEL REPORTE");
     var date = new Date();
     // AQUI VA req.user.nombre ! TODO
     return "MOTA"+"_"+date.getDate()+"-"+(1+date.getMonth())+"-"+date.getFullYear()+"_"+date.getHours()+"-"+date.getMinutes()+"-"+date.getSeconds();
