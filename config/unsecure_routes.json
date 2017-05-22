@@ -2,6 +2,7 @@
   "routes":
   [
     "/login",
-    "/signup"
+    "/signup",
+    "/reportes/create"
   ]
 }

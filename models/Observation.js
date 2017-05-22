@@ -6,7 +6,14 @@ module.exports = function(sequelize, DataTypes)
   {
     id:{ type:DataTypes.INTEGER, primaryKey:true, autoIncrement:true},
     texto: { type: DataTypes.STRING, allowNull: false},
-
+    reporte:{
+       type: DataTypes.INTEGER,
+       references:
+       {
+         model: "reportes",
+         key: 'id'
+       }
+    },
   },
   {
     tableName: 'observaciones',
@@ -15,7 +22,7 @@ module.exports = function(sequelize, DataTypes)
       associate: function(models)
       {
         Observation.belongsTo(models.Report,{foreignKey: 'reporte', targetKey: 'id'}),
-        Observation.hasMany(models.Image)
+        Observation.hasMany(models.Image, {foreignKey: 'observacion', sourceKey: 'id', as:'images'})
       }
     }
   });

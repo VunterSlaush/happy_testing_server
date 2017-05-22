@@ -34,7 +34,7 @@ app.use(function(err, req, res, next) { // Acciones en caso de un error inespera
 
 app.use(fileUpload());
 
-app.use(require('connect-multiparty')());
+//app.use(require('connect-multiparty')());
 app.use(cookieParser());
 app.use(session({ secret: 'super-secret' }));
 

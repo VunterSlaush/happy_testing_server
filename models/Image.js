@@ -6,7 +6,14 @@ module.exports = function(sequelize, DataTypes)
   {
     id:{ type:DataTypes.INTEGER, primaryKey:true, autoIncrement:true},
     direccion: { type: DataTypes.STRING, allowNull: false},
-
+    observacion:{
+       type: DataTypes.INTEGER,
+       references:
+       {
+         model: "observaciones",
+         key: 'id'
+       }
+    },
   },
   {
       tableName: 'imagenes',

@@ -1,6 +1,8 @@
-module.exports = function (app)
+var ReportsController = require('../controllers/Report.js');
+
+module.exports = function (app) // TODO finalizar esto !
 {
-  app.post('/user_app/create', function(req, res)
+  app.post('/reportes/create', function(req, res)
   {
     ReportsController.create(req,res);
   });
