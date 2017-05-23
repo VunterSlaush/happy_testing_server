@@ -11,10 +11,9 @@ module.exports =
   createDocFromReport: function(report, callback)
   {
     var docx = officegen ('docx');
-    var docData = [];
     Observation.findAll({ where:{reporte:report.id}, include:[{ model:Imagen, as: 'images'}]})
                .then(obs =>
-                 {
+                 { // TODO a;adir Header al documento !
                     for (var i = 0; i < obs.length; i++)
                     {
                       var pObj = docx.createP ();

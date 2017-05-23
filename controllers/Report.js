@@ -16,13 +16,10 @@ module.exports =
         console.log("Buscando Aplicacion:"+ req.body.aplicacion);
         App.findOne({where:{id: req.body.aplicacion}}).then(app =>
           {
-            //if(app.canDoItSomething(req.user))
-            //{
-
+            if(app.canDoItSomething(req.user))
               crearReporte(req,res);
-            //}
-          //  else
-              //  res.json({success:false, error:"no tiene acceso a esta aplicacion"});
+            else
+              res.json({success:false, error:"no tiene acceso a esta aplicacion"});
           }).catch(error => {res.json({success:false, error:'aplicacion no encontrada'}); console.log("ERROR", error)});
     },
 
@@ -150,6 +147,5 @@ function findImages(images, correlativo)
 function generateReportName(req)// TODO PENSAR ESTO BIEN!
 {
     var date = new Date();
-    // AQUI VA req.user.nombre ! TODO
-    return "MOTA"+"_"+date.getDate()+"-"+(1+date.getMonth())+"-"+date.getFullYear()+"_"+date.getHours()+"-"+date.getMinutes()+"-"+date.getSeconds();
+    return req.user.nombre+"_"+date.getDate()+"-"+(1+date.getMonth())+"-"+date.getFullYear()+"_"+date.getHours()+"-"+date.getMinutes()+"-"+date.getSeconds();
 }
