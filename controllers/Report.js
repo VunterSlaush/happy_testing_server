@@ -16,11 +16,16 @@ module.exports =
         console.log("Buscando Aplicacion:"+ req.body.aplicacion);
         App.findOne({where:{id: req.body.aplicacion}}).then(app =>
           {
-            if(app.canDoItSomething(req.user))
-              crearReporte(req,res);
-            else
-              res.json({success:false, error:"no tiene acceso a esta aplicacion"});
-          }).catch(error => {res.json({success:false, error:'aplicacion no encontrada'}); console.log("ERROR", error)});
+            app.canDoItSomething(req.user, (canDoIt) =>
+            {
+              if(canDoIt)
+                crearReporte(req,res);
+              else
+                res.json({success:false, error:"no tiene acceso a esta aplicacion"});
+            });
+
+
+          }).catch(error => {res.json({success:false, error:'aplicacion no encontrada'});});
     },
 
     delete: function(req, res)
