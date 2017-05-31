@@ -58,7 +58,8 @@ module.exports =
 
     getApps: function (req, res) // TODO myApps + CanEdiApps ..
     {
-        req.user.getApps().then(apps => res.json(apps));
+        req.user.getApps().then(apps => res.json({success:true, apps: apps}))
+                          .catch(error => res.json({success:false, error:"no se pudieron consultar las aplicaciones"}));
     },
 
     getReports: function (req, res)
