@@ -16,6 +16,15 @@ module.exports = function(sequelize, DataTypes)
          key: 'id'
        }
     },
+    owner:
+    {
+       type: DataTypes.INTEGER,
+       references:
+       {
+         model: "usuarios",
+         key: 'id'
+       }
+    }
   },
   {
     tableName: 'reportes',

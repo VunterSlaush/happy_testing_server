@@ -1,5 +1,8 @@
 var User  = require('../models').User;
+var Report  = require('../models').Report;
+var App  = require('../models').App;
 var encrypter = require('../services/encrypt');
+
 module.exports =
 {
     create: function (user, res)
@@ -64,7 +67,7 @@ module.exports =
 
     getReports: function (req, res)
     {
-        req.user.getReports().then(reports => res.json({success:true, reports:reports}));
+        Report.findAll({where:{ owner:req.user.id}, include:[{model: App}]}).then(reports => res.json({success:true, reports:reports}));
     },
 
     getAllUsers: function (req, res)
