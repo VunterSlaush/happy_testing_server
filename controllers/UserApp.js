@@ -21,6 +21,30 @@ module.exports =
           }).catch(error => res.json({success:false, error:'aplicacion no encontrada'}));
     },
 
+    createByList: function (req, res)
+    {
+      App.findOne({where:{id: req.body.aplicacion}}).then(app =>
+        {
+          let userApps = [];
+          if(app.isMyOwner(req.user))
+          {
+              for (var i = 0; i < req.body.users.length; i++)
+              {
+                userApps.push({usuario: req.body.users[i]});
+              }
+
+              app.setCanEditMe(userApps).then((res) => res.json({success:true, res:res}))
+              .catch((error) =>
+              {
+                console.log("Error en user Apps:"+error);
+                res.status(403).json({success:false, error:"usuario existente"});
+              });
+          }
+          else
+              res.json({success:false, error:"no tiene acceso a esta aplicacion"});
+        }).catch(error => res.json({success:false, error:'aplicacion no encontrada'}));
+    },
+
     delete: function(req, res)
     {
         App.findOne({where:{id: req.body.aplicacion}}).then(app =>

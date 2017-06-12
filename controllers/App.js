@@ -1,13 +1,28 @@
 "use strict";
 var User  = require('../models').User;
 var App  = require('../models').App;
+var UserApp = require('../models').UserApp;
 
 module.exports =
 {
   create: function (req, res)
   {
+      console.log("BODY", req.body);
       App.create({nombre:req.body.nombre, owner:req.user.id})
-         .then(response => res.json({success: true, res: response}))
+         .then(app =>
+           {
+             let userApps = [];
+             for (var i = 0; i < req.body.users.length; i++)
+             {
+               userApps.push({usuario: req.body.users[i], aplicacion: app.id});
+             }
+             console.log("User Apps a insertar:", userApps);
+             UserApp.bulkCreate(userApps).then(() => res.json({success: true, res: app}))
+                               .catch(error => {
+                                                  res.json({success: false, error: "Error al asociar usuarios"})
+                                                  console.log('ERROR!:', error);
+                                                  });
+           })
          .catch(error => res.json({success: false, error: "Aplicacion existente"}));
   },
 

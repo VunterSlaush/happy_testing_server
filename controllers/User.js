@@ -64,12 +64,12 @@ module.exports =
 
     getReports: function (req, res)
     {
-        req.user.getReports().then(reports => res.json(reports));
+        req.user.getReports().then(reports => res.json({success:true, reports:reports}));
     },
 
     getAllUsers: function (req, res)
     {
-        User.findAll({attributes: ['id', 'nombre','username']}).then(users => res.json({success:true, users:users}))
+        User.findAll({attributes: ['id', 'nombre','username'], where: {id:{ $ne : req.user.id }}}).then(users => res.json({success:true, users:users}))
                       .catch(error => res.json({success:false, error:"no se pudieron consultar usuarios"}));
     }
 };

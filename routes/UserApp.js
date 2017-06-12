@@ -11,4 +11,10 @@ module.exports = function (app)
   {
     UserAppsController.delete(req,res);
   });
+
+  app.post('/user_app/create_by_list', function (req, res)
+  {
+    UserAppsController.createByList(req,res);
+  });
+
 }

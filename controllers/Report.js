@@ -58,10 +58,8 @@ function crearReporte(req,res) // TODO testear esto
     if (!req.files)
       return res.status(400).json({success:false, error:'No hay archivos subidos'});
 
-    //TODO en OWNER va req.user.id
-    Report.create({aplicacion:req.body.aplicacion, nombre: generateReportName(req), owner:24 }).then(reporte =>
+    Report.create({aplicacion:req.body.aplicacion, nombre: generateReportName(req), owner:req.user.id }).then(reporte =>
     {
-      console.log("REPORTE CREADO?");
       procesarArchivos(req,reporte, (images) => procesarObservaciones(req,reporte, images,
                                           () => { docManager.createDocFromReport(reporte,null);
                                                   res.json({success:true, res: reporte});
