@@ -25,4 +25,9 @@ module.exports = function(app)
     AppController.getReports(req,res);
   });
 
+  app.get('/apps/:id', function(req,res)
+  {
+    AppController.get(req,res);
+  });
+
 }

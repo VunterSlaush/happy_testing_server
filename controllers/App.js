@@ -1,6 +1,7 @@
 "use strict";
 var User  = require('../models').User;
 var App  = require('../models').App;
+var report  = require('../models').Report;
 var UserApp = require('../models').UserApp;
 
 module.exports =
@@ -73,4 +74,21 @@ module.exports =
           });
         }).catch(error => res.json({success: false, error:error}));
   },
+
+  get: function (req, res)
+  {
+    App.findOne({where:{id:req.params.id}, include:[{model: report},{model: User, attributes:["nombre", "username","id"]},
+      {model: User, as:"canEditMe", attributes:["nombre", "username","id"]}]}).then(app =>
+      {
+        app.canDoItSomething(req.user, function (canDoIt)
+        {
+            if(canDoIt)
+            {
+              res.json({success:true,app:app});
+            }
+            else
+              res.json({success:false, error:"no tienes acceso a esta aplicacion"});
+        });
+      }).catch(error => res.json({success: false, error:error}));
+  }
 };
