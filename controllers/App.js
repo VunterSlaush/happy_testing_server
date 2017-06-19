@@ -8,7 +8,6 @@ module.exports =
 {
   create: function (req, res)
   {
-      console.log("BODY", req.body);
       App.create({nombre:req.body.nombre, owner:req.user.id})
          .then(app =>
            {

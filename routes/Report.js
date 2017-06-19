@@ -11,4 +11,9 @@ module.exports = function (app) // TODO finalizar esto !
   {
     ReportsController.delete(req,res);
   });
+
+  app.get('/reportes/:id', function (req, res)
+  {
+    ReportsController.get(req,res);
+  });
 }

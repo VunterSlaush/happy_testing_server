@@ -2,6 +2,7 @@ var models = require('../models');
 var App = models.App;
 var Report = models.Report;
 var Imagen = models.Image;
+var User = models.User;
 var Observation = models.Observation;
 var docManager = require('../services/writeDoc.js');
 var path = require('path');
@@ -48,6 +49,27 @@ module.exports =
     update: function (req, res)
     {
 
+    },
+
+    get: function (req, res)
+    {
+      console.log("REPORTGET IN");
+      Report.findOne({where:{id:req.params.id}, include:[{model: User, attributes:["nombre", "username","id"]},
+      {model:App}, {model:Observation, include:[{model:Imagen, as:'images'}]}]}).then(report =>
+      {
+          report.App.canDoItSomething(req.user, function (canDoIt)
+          {
+              if(canDoIt)
+              {
+                res.json({success:true,report:report});
+              }
+              else
+                res.json({success:false, error:"no tienes acceso a esta aplicacion"});
+          });
+        }).catch(error => {
+                            res.json({success: false, error:error});
+                            console.log("ERROR AQUI", error);
+                          });
     }
 };
 
