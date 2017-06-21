@@ -16,7 +16,7 @@ module.exports = function(app)
     res.json({success:true,id:req.user.id, nombre: req.user.nombre});
   });
 
-  app.put('/user', function(req, res)
+  app.post('/user/update', function(req, res)
   {
       UserController.update(req,res);
   });

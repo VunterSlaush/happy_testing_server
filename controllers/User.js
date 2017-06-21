@@ -12,7 +12,7 @@ module.exports =
           .catch((error) =>
           {
             console.log("Error Creando user:"+error);
-            res.status(403).json({success:false, error:"usuario existente"});
+            res.json({success:false, error:"usuario existente"});
           });
     },
 
@@ -23,18 +23,12 @@ module.exports =
 
     update: function(req, res)
     {
-      if(user.id)
-      {
-        User.update(req.body.user,{ where:{id:req.body.id}, fields: ['nombre','password'] }).then((userUpdated) => res.json(userUpdated))
+        req.body.password = encrypter.encrypt(req.body.password); // TODO esto es valido??
+        User.update(req.body,{ where:{id:req.user.id}, fields: ['username','nombre','password'] }).then((userUpdated) => res.json({success:true, user:userUpdated}))
         .catch((error) =>
         {
-          res.status(403).json({success:false, error:"no se pudieron actualizar algunos campos"});
+          res.json({success:false, error:"no se pudieron actualizar algunos campos"});
         });
-      }
-      else
-      {
-        res.status(404).json({success:false, error:"no se puede updatear el usuario sin su identificador"});
-      }
     },
 
     authStrategy: function (username, password, done)
