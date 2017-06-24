@@ -10,12 +10,12 @@ module.exports = function(app)
       AppController.create(req,res);
   });
 
-  app.put('/apps', function(req, res)
+  app.post('/apps/update', function(req, res)
   {
       AppController.update(req,res);
   });
 
-  app.delete('/apps', function(req, res)
+  app.post('/apps/delete', function(req, res)
   {
     AppController.delete(req,res);
   });

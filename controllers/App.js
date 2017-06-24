@@ -32,8 +32,20 @@ module.exports =
         {
           if(app.isMyOwner(req.user))
           {
-            app.update(req.body).then(function() {
-              res.json({success:true, app:app});
+            let userApps = [];
+            for (var i = 0; i < req.body.users.length; i++)
+            {
+              userApps.push({usuario: req.body.users[i], aplicacion: app.id});
+            }
+            UserApp.destroy({ where: { aplicacion: app.id }}).then(() =>
+            {
+               UserApp.bulkCreate(userApps).then(() =>
+               {
+                 app.update(req.body).then(function()
+                 {
+                   res.json({success:true, app:app});
+                 });
+               });
             });
           }
           else
@@ -49,7 +61,7 @@ module.exports =
           {
             app.destroy({force:true}).then(function() {
               res.json({success:true});
-            });
+            }).catch(error => {res.json({success: false, error:"error al borrar"}); console.log("ERROR DELETE", error);} );
           }
           else
             res.json({success:false, error:"no tienes acceso a esta aplicacion"});
