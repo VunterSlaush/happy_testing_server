@@ -29,15 +29,14 @@ module.exports =
           }).catch(error => {res.json({success:false, error:'aplicacion no encontrada'});});
     },
 
-    delete: function(req, res)
+    delete: function(req, res) // TODO TOTAL
     {
-        App.findOne({where:{id: req.body.aplicacion}}).then(app =>
+        Report.findOne({where:{id: req.body.id}}).then(report =>
           {
-            if(app.isMyOwner(req.user))
+            if(report.app.isMyOwner(req.user))
             {
               //TODO eliminar archivo?
-              Report.destroy({where:{id:req.body.reporte}})
-                    .then(() => res.json({success: true}))
+              report.destroy().then(() => res.json({success: true}))
                     .catch(error => res.json({success:false, error: 'no se pudo eliminar este reporte'}));
             }
             else

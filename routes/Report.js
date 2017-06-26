@@ -7,6 +7,11 @@ module.exports = function (app) // TODO finalizar esto !
     ReportsController.create(req,res);
   });
 
+  app.post('/reportes/delete', function(req, res)
+  {
+    ReportsController.delete(req,res);
+  });
+
   app.delete('/user_app', function(req, res)
   {
     ReportsController.delete(req,res);
