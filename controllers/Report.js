@@ -75,14 +75,14 @@ module.exports =
 
 function crearReporte(req,res) // TODO testear esto
 {
-    console.log("Entrando en CREAR REPORTE");
+    console.log("Entrando en CREAR REPORTE:",req.body, "Files:", req.files);
     if (!req.files)
       return res.status(400).json({success:false, error:'No hay archivos subidos'});
 
-    Report.create({aplicacion:req.body.aplicacion, nombre: generateReportName(req), owner:req.user.id }).then(reporte =>
+    Report.create({aplicacion:req.body.aplicacion, nombre: req.body.nombre, owner:req.user.id }).then(reporte =>
     {
       procesarArchivos(req,reporte, (images) => procesarObservaciones(req,reporte, images,
-                                          () => { docManager.createDocFromReport(reporte,null);
+                                          () => {
                                                   res.json({success:true, res: reporte});
                                                 })); // Muevo los Archivos de las imagenes a carpetas
 
