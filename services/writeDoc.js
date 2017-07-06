@@ -31,6 +31,10 @@ module.exports =
                     var outDir = 'storage/apps/'+report.aplicacion+'/'+report.id+'/'+report.nombre+'.docx';
                     var out =  fs.createWriteStream (nodePath+outDir);
                     docx.generate(out);
+                    callback(outDir);
+                 }).catch((error) =>
+                 {
+                   callback(null);
                  });
 
   }

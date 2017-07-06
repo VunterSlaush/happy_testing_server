@@ -5,9 +5,8 @@ var Imagen = models.Image;
 var User = models.User;
 var Observation = models.Observation;
 var docManager = require('../services/writeDoc.js');
-var path = require('path');
-var mkdirp = require('mkdirp');
-var nodePath = __dirname.replace('\controllers','');
+var imageSaver = require('../services/ImageSaver.js');
+
 
 
 module.exports =
@@ -45,14 +44,25 @@ module.exports =
 
     },
 
-    update: function (req, res)
+    publicar: function (req, res)
     {
-
+      Report.findOne({where:{id:req.body.reporte}}).then(report =>
+      {
+        docManager.createDocFromReport(report, (dir) =>
+        {
+          if(dir != null)
+            res.json({success:true, link:dir});
+          else
+            res.json({success:false, error:"no se pudo crear el archivo"});
+        })
+      }).catch(error => {
+                            res.json({success: false, error:"Reporte no encontrado"});
+                          });
     },
 
     get: function (req, res)
     {
-      console.log("REPORTGET IN");
+
       Report.findOne({where:{id:req.params.id}, include:[{model: User, attributes:["nombre", "username","id"]},
       {model:App}, {model:Observation, include:[{model:Imagen, as:'images'}]}]}).then(report =>
       {
@@ -67,7 +77,6 @@ module.exports =
           });
         }).catch(error => {
                             res.json({success: false, error:error});
-                            console.log("ERROR AQUI", error);
                           });
     }
 };
@@ -75,13 +84,12 @@ module.exports =
 
 function crearReporte(req,res) // TODO testear esto
 {
-    console.log("Entrando en CREAR REPORTE:",req.body, "Files:", req.files);
     if (!req.files)
       return res.status(400).json({success:false, error:'No hay archivos subidos'});
 
     Report.create({aplicacion:req.body.aplicacion, nombre: req.body.nombre, owner:req.user.id }).then(reporte =>
     {
-      procesarArchivos(req,reporte, (images) => procesarObservaciones(req,reporte, images,
+      imageSaver.procesarArchivos(req,reporte, (images) => procesarObservaciones(req,reporte, images,
                                           () => {
                                                   res.json({success:true, res: reporte});
                                                 })); // Muevo los Archivos de las imagenes a carpetas
@@ -91,53 +99,6 @@ function crearReporte(req,res) // TODO testear esto
     /* ESTO LO NECESITO!
     let path = 'C:/Users/user/Google\ Drive/'+sampleFile.name;
     */
-}
-
-
-function procesarArchivos(req, reporte, callback)
-{
-  req.body.images = JSON.parse(req.body.images);
-  let images = [];
-  let errors = [];
-  let dir = nodePath+'/storage/apps/'+reporte.aplicacion+'/'+reporte.id+'/images/';
-  let filePath;
-  var promises = [];
-
-  mkdirp(dir, function(err) {
-
-    if(!err)
-    {
-      Object.keys(req.files).forEach(function(k)
-      {
-          filePath = generatePath(dir,req.files[k].name, req)
-          promises.push(req.files[k].mv(filePath.direccionFisica,function (error)
-          {
-
-          }));
-          images.push(filePath);
-      });
-      Promise.all(promises).then(() => callback(images)).catch(error => console.log("ERROR", error));
-    }
-    else
-      callback(null);
-
-});
-}
-
-//TODO pensar en cambiar el PATH!
-function generatePath(dir,filename, req)
-{
-  let dirName;
-
-  for (var i = 0; i < req.body.images.length; i++)
-  {
-    if(req.body.images[i].name == filename)
-    {
-      dirName = dir + i + '-' + filename; // Directorio + posicion de la imagen en insercion + '-' + nombre imagen;
-      return {direccionFisica:dirName,direccion:dirName.replace(nodePath,''),observacion:req.body.images[i].observacion};
-    }
-  }
-  return {};
 }
 
 function procesarObservaciones(req, reporte, images, callback)
@@ -166,10 +127,4 @@ function findImages(images, correlativo)
       imagesFinded.push({direccion: images[i].direccion});
   }
   return imagesFinded;
-}
-
-function generateReportName(req)// TODO PENSAR ESTO BIEN!
-{
-    var date = new Date();
-    return req.user.nombre+"_"+date.getDate()+"-"+(1+date.getMonth())+"-"+date.getFullYear()+"_"+date.getHours()+"-"+date.getMinutes()+"-"+date.getSeconds();
 }

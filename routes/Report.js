@@ -21,4 +21,9 @@ module.exports = function (app) // TODO finalizar esto !
   {
     ReportsController.get(req,res);
   });
+
+  app.post('/reportes/publicar', function (req, res)
+  {
+    ReportsController.publicar(req,res);
+  });
 }
