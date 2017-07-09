@@ -1,10 +1,10 @@
 var path = require('path');
 var mkdirp = require('mkdirp');
-var nodePath = __dirname.replace('\controllers','');
+var nodePath = __dirname.replace('\services','');
 
 module.exports =
 {
-  procesarArchivos: function(req, reporte, callback)
+  procesarArchivos: function(req, reporte, callback) // TODO true si no hay imagenes!
   {
       req.body.images = JSON.parse(req.body.images);
       let images = [];
@@ -34,21 +34,20 @@ module.exports =
           callback(null);
 
     });
-  },
-
-
-  generatePath: function(dir,filename, req)
-  {
-    let dirName;
-
-    for (var i = 0; i < req.body.images.length; i++)
-    {
-      if(req.body.images[i].name == filename)
-      {
-        dirName = dir + i + '-' + filename; // Directorio + posicion de la imagen en insercion + '-' + nombre imagen;
-        return {direccionFisica:dirName,direccion:dirName.replace(nodePath,''),observacion:req.body.images[i].observacion};
-      }
-    }
-    return {};
   }
+}
+
+function generatePath(dir,filename, req)
+{
+  let dirName;
+
+  for (var i = 0; i < req.body.images.length; i++)
+  {
+    if(req.body.images[i].name == filename)
+    {
+      dirName = dir + i + '-' + filename; // Directorio + posicion de la imagen en insercion + '-' + nombre imagen;
+      return {direccionFisica:dirName,direccion:dirName.replace(nodePath,''),observacion:req.body.images[i].observacion};
+    }
+  }
+  return {};
 }

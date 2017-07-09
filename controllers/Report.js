@@ -46,10 +46,11 @@ module.exports =
 
     publicar: function (req, res)
     {
-      Report.findOne({where:{id:req.body.reporte}}).then(report =>
+      Report.findOne({where:{id:req.body.reporte}, include:[ {model:App},{ model:User} ] }).then(report =>
       {
         docManager.createDocFromReport(report, (dir) =>
         {
+          console.log("DIR:",dir);
           if(dir != null)
             res.json({success:true, link:dir});
           else
@@ -84,8 +85,7 @@ module.exports =
 
 function crearReporte(req,res) // TODO testear esto
 {
-    if (!req.files)
-      return res.status(400).json({success:false, error:'No hay archivos subidos'});
+    
 
     Report.create({aplicacion:req.body.aplicacion, nombre: req.body.nombre, owner:req.user.id }).then(reporte =>
     {
