@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Happy Testing :D</title>
+
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- Animate.css -->
+    <link href="../vendors/animate.css/animate.min.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+  </head>
+
+  <body class="login">
+    <div>
+      <a class="hiddenanchor" id="signin"></a>
+
+      <div class="login_wrapper">
+        <div class="animate form login_form">
+          <section class="login_content">
+            <form>
+              <h1 id="login_text">Bienvenido :D</h1>
+              <div>
+                <input id="username" type="text" class="form-control" placeholder="Usuario" required="true" />
+              </div>
+              <div>
+                <input id="password" type="password" class="form-control" placeholder="Contraseña" required="true" />
+              </div>
+              <div>
+                <a class="btn btn-default submit" onclick="login()">Entrar</a>
+              </div>
+
+              <div class="clearfix"></div>
+
+              <div class="separator">
+
+                <div class="clearfix"></div>
+                <br />
+              </div>
+            </form>
+          </section>
+        </div>
+      </div>
+    </div>
+    <script
+  src="https://code.jquery.com/jquery-3.2.1.js"
+  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+  crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      function login()
+      {
+          var dataToSend = {};
+          dataToSend.username = $("#username").val();
+          dataToSend.password = $("#password").val();
+          $.ajax({
+              type: 'POST',
+              url: '/login',
+              data: JSON.stringify(dataToSend),
+              contentType:'application/json',
+              dataType: 'json',
+              success: function (data)
+              {
+                  if (data.success)
+                  {
+                    data.username = dataToSend.username;
+                    localStorage.setItem("user", JSON.stringify(data));
+                    location.reload();
+                  }
+                  else
+                    $('#login_text').text("Datos incorrectos :c");
+
+              },
+              failure: function (response, status) {
+                 // failure code here
+                 $('#login_text').text("Datos incorrectos :c");
+              },
+              error: function ()
+              {
+                $('#login_text').text("Datos incorrectos :c");
+              }
+            });
+      }
+    </script>
+
+  </body>
+</html>
