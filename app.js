@@ -43,10 +43,15 @@ app.use(passport.session());
 
 app.get('/', function(req, res)
 {
-  res.sendFile(__dirname + '/index.html');
+  if(!req.user)
+    res.sendFile(__dirname + '/public/production/login.html');
+  else
+    res.sendFile(__dirname + '/public/production/index.html');
 });
 
 app.use('/storage',express.static(__dirname +'/storage'));
+app.use('/',express.static(__dirname +'/public'));
+
 
 app.use(SessionPolicies.hasSession);
 
@@ -57,12 +62,12 @@ passport.use(new LocalStrategy(function(username, password, done)
 }));
 
 passport.serializeUser(function(user, done) {
-    done(null, user.username);
+    done(null, user.id);
 });
 
-passport.deserializeUser(function(username, done)
+passport.deserializeUser(function(id, done)
 {
-   User.findOne({where:{ username: username }}).then(function(user) {
+   User.findOne({where:{ id: id }}).then(function(user) {
       done(null, user);
     });
 });

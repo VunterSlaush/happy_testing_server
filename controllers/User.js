@@ -19,12 +19,20 @@ module.exports =
     delete: function(user, res)
     {
       consoe.log("NOT WORKING!");
+      //TODO
     },
 
     update: function(req, res)
     {
-        req.body.password = encrypter.encrypt(req.body.password); // TODO esto es valido??
-        User.update(req.body,{ where:{id:req.user.id}, fields: ['username','nombre','password'] }).then((userUpdated) => res.json({success:true, user:userUpdated}))
+        if(req.body.password != null)
+          req.body.password = encrypter.encrypt(req.body.password); // TODO esto es valido??
+
+
+        User.update(req.body,{ where:{id:req.user.id}, fields: ['username','nombre','password'] })
+        .then((userUpdated) => {
+          req.user.username = req.body.username;
+          res.json({success:true, user:userUpdated});
+        })
         .catch((error) =>
         {
           res.json({success:false, error:"no se pudieron actualizar algunos campos"});

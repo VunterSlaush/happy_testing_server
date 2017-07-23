@@ -21,6 +21,13 @@ module.exports = function(app)
       UserController.update(req,res);
   });
 
+  app.post('/logout', function (req,res)
+  {
+    req.session.destroy();
+    req.logout();
+    res.json({success:true});
+  });
+
   app.get('/user/apps',function (req,res)
   {
     UserController.getApps(req,res);
