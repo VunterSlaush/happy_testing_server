@@ -1,4 +1,4 @@
-
+var usersMainTable;
 function users()
 {
   $.ajax({
@@ -8,7 +8,7 @@ function users()
       dataType: 'json',
       success: function (data)
       {
-        crearUserTable(data.users,"#content");
+        usersMainTable = crearUserTable(data.users,"#content");
       },
       failure: function (response, status) {
 
@@ -41,7 +41,7 @@ function crearUsersButtons(id)
 {
   let container = $("<div>",{style:"padding:3px;"});
   let seeButton = $("<a>",{onClick:"editarUser("+id+")", text:"Editar", style:" margin-right:5px;", class:"btn btn-primary"});
-  let delButton = $("<a>",{onClick:"eliminarUser("+id+")", text:"Eliminar", style:" margin-right:5px;", class:"btn btn-danger"});
+  let delButton = $("<a>",{onClick:"eliminarUser(this,"+id+")", text:"Eliminar", style:" margin-right:5px;", class:"btn btn-danger"});
   $(container).append(seeButton);
   $(container).append(delButton);
   return $(container).html();
@@ -52,7 +52,7 @@ function editarUser(id)
     //TODO
 }
 
-function eliminarUser(id)
+function eliminarUser(button,id)
 {
-  //TODO
+  deleteRemoteRow('/users/delete',id,button,usersMainTable);
 }

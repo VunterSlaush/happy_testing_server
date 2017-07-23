@@ -7,8 +7,9 @@ module.exports =
 {
     create: function (user, res)
     {
+      user.password = encrypter.encrypt(user.password);
       User.create(user)
-          .then((userCreated) => res.json(userCreated))
+          .then((userCreated) => res.json({success:true, user:userCreated}))
           .catch((error) =>
           {
             console.log("Error Creando user:"+error);
@@ -16,10 +17,18 @@ module.exports =
           });
     },
 
-    delete: function(user, res)
+    delete: function(req, res)
     {
-      consoe.log("NOT WORKING!");
-      //TODO
+      User.findOne({where:{id: req.body.id}}).then(user =>
+      {
+          user.destroy()
+              .then(() => res.json({success: true}))
+              .catch(error => res.json({success:false, error: 'no se pudo eliminar este usuario'}));
+
+      }).catch(error =>
+      {
+         res.json({success:false, error:'Usuario no encontrado'});
+      });
     },
 
     update: function(req, res)

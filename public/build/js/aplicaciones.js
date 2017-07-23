@@ -1,4 +1,6 @@
 
+var mainAppTable;
+
 function aplicaciones()
 {
   $.ajax({
@@ -9,7 +11,7 @@ function aplicaciones()
       success: function (data)
       {
         console.log(data.apps);
-        crearAppsTable(data.apps,"#content");
+        mainAppTable = crearAppsTable(data.apps,"#content");
       },
       failure: function (response, status) {
 
@@ -42,7 +44,7 @@ function crearAppButtons(id)
 {
   let container = $("<div>",{style:"padding:3px;"});
   let seeButton = $("<a>",{onClick:"verApp("+id+")", text:"Ver", style:" margin-right:5px;", class:"btn btn-primary"});
-  let delButton = $("<a>",{onClick:"eliminarApp("+id+")", text:"Eliminar", style:" margin-right:5px;", class:"btn btn-danger"});
+  let delButton = $("<a>",{onClick:"eliminarApp(this,"+id+")", text:"Eliminar", style:" margin-right:5px;", class:"btn btn-danger"});
   $(container).append(seeButton);
   $(container).append(delButton);
   return $(container).html();
@@ -53,7 +55,7 @@ function verApp(id)
     //TODO
 }
 
-function eliminarApp(id)
+function eliminarApp(button,id)
 {
-  //TODO
+  deleteRemoteRow('/apps/delete',id,button,mainAppTable);
 }

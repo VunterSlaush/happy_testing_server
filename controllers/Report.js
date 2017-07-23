@@ -28,19 +28,22 @@ module.exports =
           }).catch(error => {res.json({success:false, error:'aplicacion no encontrada'});});
     },
 
-    delete: function(req, res) // TODO TOTAL
+    delete: function(req, res)
     {
         Report.findOne({where:{id: req.body.id}}).then(report =>
           {
-            if(report.app.isMyOwner(req.user))
+            if(report.isMyOwner(req.user))
             {
-              //TODO eliminar archivo?
               report.destroy().then(() => res.json({success: true}))
                     .catch(error => res.json({success:false, error: 'no se pudo eliminar este reporte'}));
             }
             else
                 res.json({success:false, error:"no tiene acceso a esta aplicacion"});
-          }).catch(error => res.json({success:false, error:'aplicacion no encontrada'}));
+          }).catch(error =>
+          {
+              console.log("delete report e:",error);
+              res.json({success:false, error:'Reporte no encontrado'});
+          });
 
     },
 
@@ -85,7 +88,7 @@ module.exports =
 
 function crearReporte(req,res) // TODO testear esto
 {
-    
+
 
     Report.create({aplicacion:req.body.aplicacion, nombre: req.body.nombre, owner:req.user.id }).then(reporte =>
     {

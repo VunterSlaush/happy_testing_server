@@ -30,3 +30,59 @@ function showToast(type,text) {
                styling: 'bootstrap3'
                });
 }
+
+function showConfirmDialog(text, onConfirmCallback)
+{
+  $.confirm({
+    title: 'Confirmar',
+    content: text,
+    animation: 'top',
+    closeAnimation: 'scale',
+    type: 'dark',
+    typeAnimated: true,
+    buttons: {
+        si: onConfirmCallback,
+        no: function () {
+
+        }
+    }
+});
+}
+
+
+function deleteRemoteRow(route,id,button,table)
+{
+  showConfirmDialog("¿esta seguro de eliminar?", function ()
+  {
+    let dataToSend = {};
+    dataToSend.id = id;
+    $.ajax({
+        type: 'POST',
+        url: route,
+        data: JSON.stringify(dataToSend),
+        contentType:'application/json',
+        dataType: 'json',
+        success: function (data)
+        {
+            if (data.success)
+            {
+              showToast('success','Eliminacion satisfactoria :D');
+              table.row($(button).parents('tr'))
+                          .remove()
+                          .draw();
+            }
+            else
+              showToast('error',data.error);
+        },
+        failure: function (response, status) {
+           // failure code here
+           showToast('error',"Error inesperado :(");
+
+        },
+        error: function ()
+        {
+          showToast('error',"Error inesperado :(");
+        }
+      });
+  });
+}

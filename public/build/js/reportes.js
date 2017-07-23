@@ -1,4 +1,4 @@
-
+var reportsMainTable;
 function reportes()
 {
   $.ajax({
@@ -9,7 +9,7 @@ function reportes()
       success: function (data)
       {
         console.log(data.reports);
-        crearReportTable(data.reports,"#content");
+        reportsMainTable = crearReportTable(data.reports,"#content");
       },
       failure: function (response, status) {
 
@@ -42,7 +42,7 @@ function crearReportsButtons(id)
 {
   let container = $("<div>",{style:"padding:3px;"});
   let seeButton = $("<a>",{onClick:"verReport("+id+")", text:"Ver", style:" margin-right:5px;", class:"btn btn-primary"});
-  let delButton = $("<a>",{onClick:"eliminarReport("+id+")", text:"Eliminar", style:" margin-right:5px;", class:"btn btn-danger"});
+  let delButton = $("<a>",{onClick:"eliminarReport(this,"+id+")", text:"Eliminar", style:" margin-right:5px;", class:"btn btn-danger"});
   $(container).append(seeButton);
   $(container).append(delButton);
   return $(container).html();
@@ -53,7 +53,7 @@ function verReport(id)
     //TODO
 }
 
-function eliminarReport(id)
+function eliminarReport(button,id)
 {
-  //TODO
+  deleteRemoteRow('/reportes/delete',id,button,reportsMainTable);
 }

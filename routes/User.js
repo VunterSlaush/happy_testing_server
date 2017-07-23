@@ -10,8 +10,7 @@ module.exports = function(app)
   });
 
 
-  app.post('/login', passport.authenticate('local', {}),
-  function(req, res)
+  app.post('/login', passport.authenticate('local', {}), function(req, res)
   {
     res.json({success:true,id:req.user.id, nombre: req.user.nombre});
   });
@@ -36,6 +35,11 @@ module.exports = function(app)
   app.get('/user/reports',function (req,res)
   {
     UserController.getReports(req,res);
+  });
+
+  app.post('/users/delete',function (req,res)
+  {
+    UserController.delete(req,res);
   });
 
   app.get('/users',function (req,res)
