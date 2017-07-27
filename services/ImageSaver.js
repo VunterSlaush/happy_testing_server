@@ -6,6 +6,12 @@ module.exports =
 {
   procesarArchivos: function(req, reporte, callback) // TODO true si no hay imagenes!
   {
+      if(req.files == null)
+      {
+        callback([]);
+        return;
+      }
+
       req.body.images = JSON.parse(req.body.images);
       let images = [];
       let errors = [];

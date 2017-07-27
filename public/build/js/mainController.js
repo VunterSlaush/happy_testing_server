@@ -1,5 +1,4 @@
 var user;
-var apps;
 
 $( document ).ready(function()
 {
@@ -15,18 +14,25 @@ $( document ).ready(function()
 function loadContent()
 {
     var name = location.hash.slice(1) != null ? location.hash.slice(1) : "aplicaciones";
+    var param;
+    if(name.indexOf("/") != -1)
+    {
+      param = name.substring(name.indexOf("/")+1, name.length);
+      name = name.substring(0,name.indexOf("/"));
+    }
+
     $('#content').empty();
     $('#content').load('../production/'+name+".html?"+(new Date).getTime(),function()
     {
-      callNameFunction(name);
+      callNameFunction(name,param);
     });
 }
 
-function callNameFunction(name)
+function callNameFunction(name,param)
 {
   var fn = window[name];
   if(typeof fn === 'function')
-        fn();
+        fn(param);
 }
 
 function logout()

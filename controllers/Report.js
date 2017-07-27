@@ -106,6 +106,12 @@ function crearReporte(req,res) // TODO testear esto
 
 function procesarObservaciones(req, reporte, images, callback)
 {
+  if(req.body.observaciones == null)
+  {
+    callback();
+    return;
+  }
+  
   let promises = [];
   req.body.observaciones = JSON.parse(req.body.observaciones);
   for (var i = 0; i < req.body.observaciones.length; i++)

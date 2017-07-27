@@ -43,16 +43,11 @@ function addAppsToTable(table, apps)
 function crearAppButtons(id)
 {
   let container = $("<div>",{style:"padding:3px;"});
-  let seeButton = $("<a>",{onClick:"verApp("+id+")", text:"Ver", style:" margin-right:5px;", class:"btn btn-primary"});
+  let seeButton = $("<a>",{href:"#aplicacion/"+id, text:"Ver", style:" margin-right:5px;", class:"btn btn-primary"});
   let delButton = $("<a>",{onClick:"eliminarApp(this,"+id+")", text:"Eliminar", style:" margin-right:5px;", class:"btn btn-danger"});
   $(container).append(seeButton);
   $(container).append(delButton);
   return $(container).html();
-}
-
-function verApp(id)
-{
-    //TODO
 }
 
 function eliminarApp(button,id)

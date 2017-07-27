@@ -100,6 +100,6 @@ module.exports =
             else
               res.json({success:false, error:"no tienes acceso a esta aplicacion"});
         });
-      }).catch(error => res.json({success: false, error:error}));
+      }).catch(error => res.json({success: false, error:"no se encontro la aplicacion"}));
   }
 };

@@ -21,12 +21,12 @@ function reportes()
     });
 }
 
-function crearReportTable(apps, appendTo)
+function crearReportTable(apps, appendTo,pages)
 {
   model = ["Creado","id","Aplicacion","Nombre","Accion"];
   table = createTable(model);
   $(appendTo).append(table);
-  table = initDataTable(table);
+  table = initDataTable(table,3);
   addReportsToTable(table,apps);
   return table
 }
@@ -41,16 +41,11 @@ function addReportsToTable(table, reports)
 function crearReportsButtons(id)
 {
   let container = $("<div>",{style:"padding:3px;"});
-  let seeButton = $("<a>",{onClick:"verReport("+id+")", text:"Ver", style:" margin-right:5px;", class:"btn btn-primary"});
+  let seeButton = $("<a>",{href:"#reporte/"+id, text:"Ver", style:" margin-right:5px;", class:"btn btn-primary"});
   let delButton = $("<a>",{onClick:"eliminarReport(this,"+id+")", text:"Eliminar", style:" margin-right:5px;", class:"btn btn-danger"});
   $(container).append(seeButton);
   $(container).append(delButton);
   return $(container).html();
-}
-
-function verReport(id)
-{
-    //TODO
 }
 
 function eliminarReport(button,id)

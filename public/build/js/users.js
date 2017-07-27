@@ -1,23 +1,10 @@
 var usersMainTable;
 function users()
 {
-  $.ajax({
-      type: 'GET',
-      url: '/users',
-      contentType:'application/json',
-      dataType: 'json',
-      success: function (data)
-      {
-        usersMainTable = crearUserTable(data.users,"#content");
-      },
-      failure: function (response, status) {
-
-      },
-      error: function ()
-      {
-
-      }
-    });
+  findAllUsers(function (users)
+  {
+      usersMainTable = crearUserTable(users,"#content");
+  });
 }
 
 function crearUserTable(apps, appendTo)

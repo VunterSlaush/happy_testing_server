@@ -15,11 +15,12 @@ function createTable(model)
 }
 
 
-function initDataTable(table, data)
+function initDataTable(table, page)
 {
-  return $(table).DataTable( {
-
-    } );
+  return $(table).DataTable({
+    "pageLength": page,
+    "bLengthChange": false,
+  });
 }
 
 
@@ -54,35 +55,120 @@ function deleteRemoteRow(route,id,button,table)
 {
   showConfirmDialog("¿esta seguro de eliminar?", function ()
   {
-    let dataToSend = {};
-    dataToSend.id = id;
-    $.ajax({
-        type: 'POST',
-        url: route,
-        data: JSON.stringify(dataToSend),
-        contentType:'application/json',
-        dataType: 'json',
-        success: function (data)
-        {
-            if (data.success)
-            {
-              showToast('success','Eliminacion satisfactoria :D');
-              table.row($(button).parents('tr'))
-                          .remove()
-                          .draw();
-            }
-            else
-              showToast('error',data.error);
-        },
-        failure: function (response, status) {
-           // failure code here
-           showToast('error',"Error inesperado :(");
-
-        },
-        error: function ()
-        {
-          showToast('error',"Error inesperado :(");
-        }
-      });
+    deleteSomething(route,id, function ()
+    {
+      showToast('success','Eliminacion satisfactoria :D');
+      table.row($(button).parents('tr'))
+                  .remove()
+                  .draw();
+    });
   });
+}
+
+function deleteSomething(route,id, successCallback)
+{
+  let dataToSend = {};
+  dataToSend.id = id;
+  $.ajax({
+      type: 'POST',
+      url: route,
+      data: JSON.stringify(dataToSend),
+      contentType:'application/json',
+      dataType: 'json',
+      success: function (data)
+      {
+          if (data.success)
+          {
+            successCallback();
+          }
+          else
+            showToast('error',data.error);
+      },
+      failure: function (response, status) {
+         // failure code here
+         showToast('error',"Error inesperado :(");
+
+      },
+      error: function ()
+      {
+        showToast('error',"Error inesperado :(");
+      }
+    });
+}
+
+function simpleInputDialog(title,callback)
+{
+  $.confirm({
+    title: title,
+    animation: 'top',
+    closeAnimation: 'scale',
+    type: 'dark',
+    typeAnimated: true,
+    content: '' +
+    '<form action="" class="formName">' +
+    '<div class="form-group">' +
+    '<input type="text" class="name form-control" required />' +
+    '</div>' +
+    '</form>',
+    buttons: {
+        formSubmit:
+        {
+            text: 'Ok',
+            btnClass: 'btn-blue',
+            action: function ()
+            {
+                var name = this.$content.find('.name').val();
+                if(!name)
+                {
+                  $.alert({
+                      title:"",
+                      content: 'este campo no puede estar vacio :c',
+                      type: 'red'
+                    });
+                    return false;
+                }
+                callback(name);
+            }
+        },
+        cancel: function () {
+            //close
+        },
+    },
+    onContentReady: function () {
+        // bind to events
+        var jc = this;
+        this.$content.find('form').on('submit', function (e) {
+            // if the user submits the form by pressing enter in the field.
+            e.preventDefault();
+            jc.$$formSubmit.trigger('click'); // reference the button and click it
+        });
+    }
+});
+}
+
+
+function findAllUsers(callback)
+{
+  $.ajax({
+      type: 'GET',
+      url: '/users',
+      contentType:'application/json',
+      dataType: 'json',
+      success: function (data)
+      {
+        if(data.success)
+          callback(data.users);
+        else
+          showToast("error",data.error);
+      },
+      failure: function (response, status) {
+         // failure code here
+         showToast('error',"Error inesperado :(");
+
+      },
+      error: function ()
+      {
+        showToast('error',"Error inesperado :(");
+      }
+    });
 }
