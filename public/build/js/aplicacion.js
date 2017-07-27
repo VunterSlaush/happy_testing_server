@@ -44,7 +44,6 @@ function fillAppUI(app)
 function fillEditors(editors)
 {
   let editorContainer;
-  let editorIcon = $("<i>",{class:"fa fa-user"});
   let editorH3;
   let editorStrong;
   for (var i = 0; i < editors.length; i++)
@@ -52,7 +51,7 @@ function fillEditors(editors)
     editorContainer = $("<div>",{id:"editor-"+editors[i].UserApp.id});
     editorH3 =  $("<h3>",{});
     editorStrong = $("<strong>",{text:" @"+editors[i].username + " - " +editors[i].nombre});
-    $(editorH3).append(editorIcon);
+    $(editorH3).append($("<i>",{class:"fa fa-user"}));
     $(editorH3).append(editorStrong);
     $(editorContainer).append(editorH3);
     $("#users_container").append(editorContainer);
