@@ -1,3 +1,5 @@
+var App;
+
 function aplicacion(id)
 {
   $.ajax({
@@ -25,6 +27,7 @@ function aplicacion(id)
 
 function fillAppUI(app)
 {
+  App = app;
   $("#app_name").text(app.nombre);
   $("#app_user").text("@"+app.User.username+" - " + app.User.nombre);
   $("#add_editor_button").attr("onclick","add_editor("+app.id+")");
@@ -125,12 +128,12 @@ function showEditorsDialog(editors)
 {
   let content = generateEditorsContent(editors);
   $.confirm({
-    title: "Agregar Editores",
+    title: "<h3><i class='fa fa-users'></i> Agregar Editores</h3>",
     animation: 'top',
     closeAnimation: 'scale',
     type: 'dark',
     typeAnimated: true,
-    content: '' + content,
+    content: content,
     buttons: {
         formSubmit:
         {
@@ -138,17 +141,13 @@ function showEditorsDialog(editors)
             btnClass: 'btn-blue',
             action: function ()
             {
-                var name = this.$content.find('.name').val();
-                if(!name)
-                {
-                  $.alert({
-                      title:"",
-                      content: 'este campo no puede estar vacio :c',
-                      type: 'red'
-                    });
-                    return false;
-                }
-                callback(name);
+              let checks = $(".editor_check");
+              let editors = [];
+              for (var i = 0; i < checks.length; i++) {
+                if($(checks[i]).is(':checked'))
+                  editors.push($(checks[i]).val());
+              }
+              updateEditors(App.id,editors);
             }
         },
         cancel: function () {
@@ -169,10 +168,59 @@ function showEditorsDialog(editors)
 
 function generateEditorsContent(editors)
 {
-    let container = $("<div>",{});
+    let container = $("<div>",{style:"height:20vh; overflow-y:true;", id:'editorsCheckContainer'});
+
+    let container2 = $("<div>",{style:"height:20vh; overflow-y:auto;", id:'editorsCheckContainer'});
+    $(container).append(container2);
     for (var i = 0; i < editors.length; i++)
     {
-      $(container).append('<input type="checkbox" id="e-'+editors[i].id+'" value="'+editors[i].id+'"> <label for="e-'+editors[i].id+'">'+editors[i].username+'</label>')
+      if(appContainsEditor(editors[i]))
+        $(container2).append('<input  class="editor_check" type="checkbox" id="e-'+editors[i].id+'" value="'+editors[i].id+'" checked> <label for="e-'+editors[i].id+'"><i class="fa fa-user"></i> @'+editors[i].username+' - '+editors[i].nombre+'</label>');
+      else
+        $(container2).append('<input  class="editor_check" type="checkbox" id="e-'+editors[i].id+'" value="'+editors[i].id+'"> <label for="e-'+editors[i].id+'"><i class="fa fa-user"></i> @'+editors[i].username+' - '+editors[i].nombre+'</label>');
+      $(container2).append("</br>")
     }
     return $(container).html();
+}
+
+function appContainsEditor(editor)
+{
+    for (var i = 0; i < App.canEditMe.length; i++) {
+      if(App.canEditMe[i].id == editor.id)
+        return true;
+    }
+    return false;
+}
+
+function updateEditors(aplicacion, users)
+{
+  let dataToSend = {};
+  dataToSend.users = users;
+  dataToSend.id = aplicacion;
+  $.ajax({
+      type: 'POST',
+      url: '/apps/update',
+      data: JSON.stringify(dataToSend),
+      contentType:'application/json',
+      dataType: 'json',
+      success: function (data)
+      {
+          if (data.success)
+          {
+            showToast("success","Editores actualizados satisfactoriamente");
+            loadContent();
+          }
+          else
+            showToast('error',data.error);
+      },
+      failure: function (response, status) {
+         // failure code here
+         showToast('error',"Error inesperado :(");
+
+      },
+      error: function ()
+      {
+        showToast('error',"Error inesperado :(");
+      }
+    });
 }
