@@ -13,7 +13,7 @@ $( document ).ready(function()
 
 function loadContent()
 {
-    var name = location.hash.slice(1) != null ? location.hash.slice(1) : "aplicaciones";
+    var name = location.hash.slice(1) != "" ? location.hash.slice(1) : "aplicaciones";
     var param;
     if(name.indexOf("/") != -1)
     {

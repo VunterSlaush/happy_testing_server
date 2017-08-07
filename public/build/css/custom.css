@@ -3121,7 +3121,7 @@ ul.project_files li a i {
     margin-bottom: 5px
 }
 .thumbnail {
-    height: 190px;
+
     overflow: hidden
 }
 .view {
@@ -3151,7 +3151,7 @@ ul.project_files li a i {
     font-size: 17px;
     padding: 3px;
     background: rgba(0, 0, 0, 0.35);
-    margin: 43px 0 0 0
+    margin: 90px 0 0 0
 }
 .mask.no-caption .tools {
     margin: 90px 0 0 0
@@ -4253,4 +4253,15 @@ table thead .checkbox.radio { margin-top:-7px;margin-top:-21px; }
 body
 {
   font-size: 1.6rem;
+}
+
+.state-over
+{
+  border: 5px solid rgba(52, 73, 94, 0.55);
+  border-radius: 5px;
+}
+
+.dz-preview
+{
+  display: none;
 }

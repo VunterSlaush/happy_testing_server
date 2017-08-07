@@ -27,13 +27,13 @@ module.exports =
     delete: function(req, res)
     {
         console.log("MOTA--->",req.body);
-        Observation.findOne({where:{id: req.body.observacion}}).then(observation =>
+        Observation.findOne({where:{id: req.body.id}}).then(observation =>
           {
               observation.getReport().then((report) =>
               {
                 if(report.isMyOwner(req.user))
                 {
-                  Observation.destroy({where:{id:req.body.observacion}})
+                  Observation.destroy({where:{id:req.body.id}})
                          .then(response => res.json({success:true, res:response}))
                          .catch(error => res.json({success:false, error:"error al eliminar"}));
                 }

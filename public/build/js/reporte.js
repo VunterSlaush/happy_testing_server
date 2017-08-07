@@ -1,3 +1,5 @@
+var slider;
+var imageDrop;
 function reporte(id)
 {
   $.ajax({
@@ -20,6 +22,8 @@ function reporte(id)
         showToast('error',"Error inesperado :(");
       }
     });
+    initDropZone();
+
 }
 
 function fillReportUI(report)
@@ -32,11 +36,105 @@ function fillReportUI(report)
   $("#add_observation_button").attr("onclick","add_observation("+report.id+")");
   $("#publish_report").attr("onclick","publish("+report.id+")");
   $("#delete_reporte_button").attr("onclick","delete_report("+report.id+")");
+  fillObservations(report.Observations);
+  slider = $('.bxslider').bxSlider();
+
+  showToast("info","Para agregar imagenes a una observacion simplemente arrojelas sobre la misma ;)");
+}
+
+function fillObservations(observations)
+{
+    for (var i = 0; i < observations.length; i++)
+      putObservationOnUI(observations[i]);
+
+}
+
+function putObservationOnUI(observation)
+{
+    let container = $("<li>",{id:"ob-"+observation.id, class:"dragdrop"});
+    let title = $("<h3>",{text:'"'+observation.texto+'"', style:"font-style: italic;"});
+    let xIcon = $("<i>",{class:"fa fa-times"});
+    let btnDelete = $("<a>",{onclick:"deleteObservation("+observation.id+")", style:"font-size:3rem; margin-right:-3vw;", class:"col-md-1"});
+    $(btnDelete).append(xIcon);
+    //let btnAddImages = $("<button>",{text:'Seleecionar Imagenes', onclick:"triggerClickDropZone(); return;", class:"btn btn-primary dz-clickable"});
+    $(container).append(btnDelete);
+    $(container).append(title);
+    //$(container).append(btnAddImages);
+
+
+
+    if(observation.images != null)
+    {
+      let images = generateImages(observation.images);
+      $(container).append(images);
+    }
+    $("#bx_container").append(container);
+}
+
+function generateImages(images)
+{
+  let container = $("<div>",{class:"row"});
+  let divCol, thumb, imgView, img, mask, tools, click,click2, icon, icon2;
+  for (var i = 0; i < images.length; i++)
+  {
+    divCol = $("<div>", {class:"col-md-2", id:"img-"+images[i].id});
+    thumb = $("<div>",{class:"thumbnail"});
+    imgView = $("<div>",{class:"image view view-first"});
+    img = $("<img>",{style:"width: 100%; display: block;", src:images[i].direccion, alt:"image"});
+    mask = $("<div>",{class:"mask"});
+    tools = $("<div>",{class:"tools tools-bottom"});
+    click = $("<a>", {onclick:"removeImage("+images[i].id+")"});
+    icon = $("<i>",{class:"fa fa-times"});
+    click2 = $("<a>", {onclick:"viewImage('"+images[i].direccion+"')"});
+    icon2 = $("<i>",{class:"fa fa-eye"});
+    $(click2).append(icon2);
+    $(tools).append(click2);
+    $(click).append(icon);
+    $(tools).append(click);
+    $(mask).append(tools);
+    $(imgView).append(img);
+    $(imgView).append(mask);
+    $(thumb).append(imgView);
+    $(divCol).append(thumb);
+    $(container).append(divCol);
+  }
+  return container;
 }
 
 function add_observation(id)
 {
-  //TODO
+  let dataToSend = {};
+  dataToSend.reporte = id;
+
+  simpleInputDialog("Agrega tu observacion :D", function (text)
+  {
+    dataToSend.texto = text;
+    $.ajax({
+        type: 'POST',
+        url: '/observations/create',
+        contentType:'application/json',
+        dataType: 'json',
+        data: JSON.stringify(dataToSend),
+        success: function (data)
+        {
+          if (data.success)
+          {
+            putObservationOnUI(data.res);
+            slider.reloadSlider();
+            $(".bx-pager-link").last().click();
+          }
+          else
+            showToast('error',data.error);
+        },
+        failure: function (response, status) {
+          showToast('error',"Error inesperado :(");
+        },
+        error: function ()
+        {
+          showToast('error',"Error inesperado :(");
+        }
+      });
+  });
 }
 
 function publish(id)
@@ -79,7 +177,6 @@ function showDialogToLink(link)
         si: function ()
         {
             window.open(link, 'Ver Reporte', '');
-            //location.href = link;
         },
         no: function () {
 
@@ -97,6 +194,177 @@ function delete_report(id)
     {
       showToast('success',"Reporte eliminada satisfactoriamente :D");
       window.location.href = "#reportes";
+    });
+  });
+}
+
+function initDropZone()
+{
+  imageDrop = new Dropzone("#observations_container",{ url: "/images/create"});
+  imageDrop.options.autoProcessQueue = false;
+  imageDrop.options.uploadMultiple = true;
+  imageDrop.options.withCredentials = true;
+  imageDrop.options.clickable = false;
+
+  imageDrop.options.accept = function(file, done) {
+      if (file.name.toLowerCase().indexOf(".jpg") != -1 ||
+          file.name.toLowerCase().indexOf(".jpeg") != -1 ||
+          file.name.toLowerCase().indexOf(".png") != -1 )
+      {
+        done();
+      }
+      else
+      {
+        showToast("error",file.name+" no es un archivo permitido :c");
+      }
+  }
+  imageDrop.on("drop", function()
+  {
+    $(".bx-wrapper").removeClass("state-over");
+    setTimeout(function ()
+    {
+      onFilesDroped(imageDrop.files);
+
+    }, 500);
+  });
+  imageDrop.on("dragover", function () {
+       $(".bx-wrapper").addClass("state-over");
+  });
+  imageDrop.on("dragleave", function ()
+  {
+
+     $(".bx-wrapper").removeClass("state-over");
+  });
+  imageDrop.on("success", function (file,res)
+  {
+    showToast("success", file.name+" se subio satisfactoriamente :D");
+    addImagesToObservation(res.res);
+  });
+
+  imageDrop.on("error", function (file,res)
+  {
+      showToast("error", file.name+" no pudo subirse :(");
+  });
+  $("#observations_container").removeClass("dz-clickable");
+
+  $(".dz-hidden-input").prop("disabled",true);
+}
+
+function onFilesDroped(files)
+{
+  let observationId = findActualObservation();
+  images = [];
+  for (var i = 0; i < files.length; i++) {
+    files[i].observation = observationId;
+    images.push({observacion:observationId, name:files[i].name});
+  }
+  imageDrop.options.params.images = JSON.stringify(images);
+  observationId = observationId.replace("ob-","");
+  imageDrop.options.params.observacion = observationId;
+  imageDrop.processQueue();
+}
+
+function findActualObservation()
+{
+  let dropers = $(".dragdrop");
+  for (var i = 0; i < dropers.length; i++) {
+    if($(dropers[i]).attr("aria-hidden") == "false")
+    {
+        return $(dropers[i]).attr("id");
+    }
+  }
+  return "";
+}
+
+function triggerClickDropZone() {
+  console.log("HMMM ..");
+  $(".dz-hidden-input").prop("disabled",false);
+  imageDrop.hiddenFileInput.click();
+  console.log("HMMM ..  2");
+  setTimeout(function ()
+  {
+    onFilesDroped(imageDrop.files);
+    $(".dz-hidden-input").prop("disabled",true);
+    console.log("HMMM .. 3");
+  }, 100);
+}
+
+function addImagesToObservation(images) //TODO posible refactor
+{
+  let obId = images[0].observacion;
+  divCol = $("<div>", {class:"col-md-2", id:images[0].id});
+  thumb = $("<div>",{class:"thumbnail"});
+  imgView = $("<div>",{class:"image view view-first"});
+  img = $("<img>",{style:"width: 100%; display: block;", src:images[0].direccion, alt:"image"});
+  mask = $("<div>",{class:"mask"});
+  tools = $("<div>",{class:"tools tools-bottom"});
+  click = $("<a>", {href:"#", onclick:"removeImage("+images[0].id+")"});
+  icon = $("<i>",{class:"fa fa-times"});
+  click2 = $("<a>", {href:"#", onclick:"viewImage('"+images[0].direccion+"')"});
+  icon2 = $("<i>",{class:"fa fa-eye"});
+  $(click2).append(icon2);
+  $(tools).append(click2);
+  $(click).append(icon);
+  $(tools).append(click);
+  $(mask).append(tools);
+  $(imgView).append(img);
+  $(imgView).append(mask);
+  $(thumb).append(imgView);
+  $(divCol).append(thumb);
+  $("#ob-"+obId+" div.row").append(divCol);
+}
+
+function removeImage(id)
+{
+  showConfirmDialog("¿Esta seguro de borrar esta imagen?", function ()
+  {
+    let dataToSend = {};
+    dataToSend.observacion = findActualObservation().replace("ob-","");;
+    dataToSend.images = [id];
+    $.ajax({
+        type: 'POST',
+        url: '/images/delete',
+        contentType:'application/json',
+        data:JSON.stringify(dataToSend),
+        dataType: 'json',
+        success: function (data)
+        {
+          if (data.success)
+          {
+            $("#img-"+id).remove();
+          }
+          else
+            showToast('error',data.error);
+        },
+        failure: function (response, status) {
+          showToast('error',"Error inesperado :(");
+        },
+        error: function ()
+        {
+          showToast('error',"Error inesperado :(");
+        }
+      });
+  });
+
+
+}
+
+function viewImage(image)
+{
+  $('#imagepreview').attr('src', image);
+  $('#imagemodal').modal('show');
+}
+
+function deleteObservation(id)
+{
+  showConfirmDialog("¿Esta seguro de eliminar esta observacion?", function ()
+  {
+    deleteSomething("/observations/delete",id,function ()
+    {
+      let ob = findActualObservation()
+      $("#"+ob).remove();
+      slider.reloadSlider();
+      showToast("success", "observacion eliminada satisfactoriamente :D");
     });
   });
 }

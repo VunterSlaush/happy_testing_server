@@ -32,10 +32,10 @@
     <link href="../vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
 
     <!-- Custom Theme Style -->
+    <link href="../build/css/jquery.bxslider.css" rel="stylesheet" />
     <link href="../build/css/custom.css" rel="stylesheet">
     <link href="../build/css/select2.min.css" rel="stylesheet">
     <link href="../build/css/jquery-confirm.min.css" rel="stylesheet">
-
   </head>
 
   <body class="nav-md">
@@ -148,6 +148,14 @@
 
         </div>
 
+        <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="col-md-10 col-md-offset-1">
+              <img src="" id="imagepreview" style="width:100%; height:auto;">
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -194,9 +202,12 @@
 
     <!-- Custom Theme Scripts -->
     <script src="../build/js/custom.js"></script>
+    <!-- TODO DESCARGAR LOCAL DATATABLE! -->
     <script type="text/javascript" src="//cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="../build/js/select2.min.js"></script>
     <script type="text/javascript" src="../build/js/jquery-confirm.min.js"></script>
+    <script type="text/javascript" src="../build/js/jquery.bxslider.min.js"></script>
+    <script type="text/javascript" src="../build/js/dropzone.js"></script>
     <script type="text/javascript" src="../build/js/utils.js"></script>
     <script type="text/javascript" src="../build/js/mainController.js"></script>
     <script type="text/javascript" src="../build/js/aplicaciones.js"></script>
@@ -207,6 +218,7 @@
     <script type="text/javascript" src="../build/js/perfil.js"></script>
     <script type="text/javascript" src="../build/js/reporte.js"></script>
     <script type="text/javascript" src="../build/js/aplicacion.js"></script>
+
 
     </script>
 

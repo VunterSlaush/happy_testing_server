@@ -8,9 +8,10 @@ module.exports =
 {
     create: function (req, res)
     {
-        console.log("Create Images:",req);
+        console.log("Create Images:",req.body, " USER:", req.user);
         Observation.findOne({where:{id: req.body.observacion}}).then(observation =>
         {
+          console.log("OBSERVATION:",observation);
           observation.getReport().then((report) =>
           {
             if(report.isMyOwner(req.user))
@@ -19,7 +20,11 @@ module.exports =
             }
             else
                 res.json({success:false, error:"no tiene acceso a esta aplicacion"});
-          }).catch(error => res.json({success:false, error:'no tiene acceso a esta aplicacion'}));
+          }).catch(error =>
+            {
+              console.log("CREATE IMAGE ERROR", error);
+              res.json({success:false, error:'no tiene acceso a esta aplicacion'})
+            });
 
         }).catch(error => res.json({success:false, error:'Observacion no encontrada'}));
     },
@@ -58,6 +63,6 @@ function saveImages(observation,images, res)
   }
 
   console.log("images",images);
-  Image.bulkCreate(images).then( (resp) => res.json({success:true, res:resp}))
+  Image.bulkCreate(images,{returning: true}).then( (resp) => res.json({success:true, res:resp}))
                           .catch( () =>  res.json({success:true, error:"Error al agregar imagenes"}));
 }
