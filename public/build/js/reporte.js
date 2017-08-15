@@ -49,25 +49,18 @@ function fillObservations(observations)
 
 }
 
-function putObservationOnUI(observation)
+function putObservationOnUI(observation) // TODO fix Text !
 {
     let container = $("<li>",{id:"ob-"+observation.id, class:"dragdrop"});
     let title = $("<h3>",{text:'"'+observation.texto+'"', style:"font-style: italic;"});
     let xIcon = $("<i>",{class:"fa fa-times"});
-    let btnDelete = $("<a>",{onclick:"deleteObservation("+observation.id+")", style:"font-size:3rem; margin-right:-3vw;", class:"col-md-1"});
+    let btnDelete = $("<a>",{onclick:"deleteObservation("+observation.id+"); return;", style:"font-size:3rem; margin-right:-3vw;", class:"col-md-1"});
     $(btnDelete).append(xIcon);
-    //let btnAddImages = $("<button>",{text:'Seleecionar Imagenes', onclick:"triggerClickDropZone(); return;", class:"btn btn-primary dz-clickable"});
     $(container).append(btnDelete);
     $(container).append(title);
-    //$(container).append(btnAddImages);
+    let images = generateImages(observation.images);
+    $(container).append(images);
 
-
-
-    if(observation.images != null)
-    {
-      let images = generateImages(observation.images);
-      $(container).append(images);
-    }
     $("#bx_container").append(container);
 }
 
@@ -85,7 +78,7 @@ function generateImages(images)
     tools = $("<div>",{class:"tools tools-bottom"});
     click = $("<a>", {onclick:"removeImage("+images[i].id+")"});
     icon = $("<i>",{class:"fa fa-times"});
-    click2 = $("<a>", {onclick:"viewImage('"+images[i].direccion+"')"});
+    click2 = $("<a>", {onclick:"viewImage('"+images[i].direccion+"'); return;"});
     icon2 = $("<i>",{class:"fa fa-eye"});
     $(click2).append(icon2);
     $(tools).append(click2);
@@ -119,6 +112,7 @@ function add_observation(id)
         {
           if (data.success)
           {
+            data.res.images = [];
             putObservationOnUI(data.res);
             slider.reloadSlider();
             $(".bx-pager-link").last().click();
@@ -291,6 +285,7 @@ function triggerClickDropZone() {
 
 function addImagesToObservation(images) //TODO posible refactor
 {
+
   let obId = images[0].observacion;
   divCol = $("<div>", {class:"col-md-2", id:images[0].id});
   thumb = $("<div>",{class:"thumbnail"});
@@ -298,9 +293,9 @@ function addImagesToObservation(images) //TODO posible refactor
   img = $("<img>",{style:"width: 100%; display: block;", src:images[0].direccion, alt:"image"});
   mask = $("<div>",{class:"mask"});
   tools = $("<div>",{class:"tools tools-bottom"});
-  click = $("<a>", {href:"#", onclick:"removeImage("+images[0].id+")"});
+  click = $("<a>", {onclick:"removeImage("+images[0].id+"); return;"});
   icon = $("<i>",{class:"fa fa-times"});
-  click2 = $("<a>", {href:"#", onclick:"viewImage('"+images[0].direccion+"')"});
+  click2 = $("<a>", { onclick:"viewImage('"+images[0].direccion+"'); return;"});
   icon2 = $("<i>",{class:"fa fa-eye"});
   $(click2).append(icon2);
   $(tools).append(click2);

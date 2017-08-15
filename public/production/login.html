@@ -62,6 +62,12 @@
   integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
   crossorigin="anonymous"></script>
     <script type="text/javascript">
+      $('#password').keypress(function (e) {
+        if (e.which == 13) {
+          login();
+          return false;    //<---- Add this line
+        }
+      });
       function login()
       {
           var dataToSend = {};

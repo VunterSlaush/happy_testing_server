@@ -7,12 +7,14 @@ module.exports =
 {
     create: function (user, res)
     {
-      user.password = encrypter.encrypt(user.password);
       User.create(user)
-          .then((userCreated) => res.json({success:true, user:userCreated}))
+          .then((userCreated) => {
+
+            res.json({success:true, user:userCreated})}
+          )
           .catch((error) =>
           {
-            console.log("Error Creando user:"+error);
+
             res.json({success:false, error:"usuario existente"});
           });
     },
@@ -53,11 +55,8 @@ module.exports =
       User.findOne({where: {username:username}})
           .then(userFinded =>
             {
-              console.log("Encontre al usuario:"+userFinded);
-
                if(userFinded && encrypter.compare(userFinded.password,password))
                {
-                  console.log("password correcta");
                   return done(null, userFinded);
                }
                else
@@ -70,10 +69,23 @@ module.exports =
       });
     },
 
-    getApps: function (req, res) // TODO myApps + CanEdiApps ..
+    getApps: function (req, res) 
     {
-        req.user.getApps().then(apps => res.json({success:true, apps: apps}))
-                          .catch(error => res.json({success:false, error:"no se pudieron consultar las aplicaciones"}));
+        req.user.getCanEditApps().then(canEdit =>
+        {
+
+          req.user.getApps().then(apps =>
+          {
+              for (var i = 0; i < canEdit.length; i++) {
+                apps.push(canEdit[i]);
+              }
+              res.json({success:true, apps: apps});
+
+          }).catch(error => res.json({success:false, error:"no se pudieron consultar las aplicaciones"}));
+
+        }).catch(error => res.json({success:false, error:"no se pudieron consultar las aplicaciones"}));
+
+
     },
 
     getReports: function (req, res)

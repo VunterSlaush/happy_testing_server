@@ -19,11 +19,11 @@ module.exports =
               imageSaver.procesarArchivos(req,report, (images) => saveImages(req.body.observacion,images, res)); // Muevo los Archivos de las imagenes a carpetas
             }
             else
-                res.json({success:false, error:"no tiene acceso a esta aplicacion"});
+                res.json({success:false, error:"no tiene acceso a este Reporte"});
           }).catch(error =>
             {
               console.log("CREATE IMAGE ERROR", error);
-              res.json({success:false, error:'no tiene acceso a esta aplicacion'})
+              res.json({success:false, error:'no tiene acceso a este Reporte'})
             });
 
         }).catch(error => res.json({success:false, error:'Observacion no encontrada'}));
@@ -31,7 +31,7 @@ module.exports =
 
     delete: function(req, res)
     {
-      console.log("Borrando imagenes>",req);
+
       Observation.findOne({where:{id: req.body.observacion}}).then(observation =>
       {
         observation.getReport().then((report) =>
@@ -44,7 +44,7 @@ module.exports =
           }
           else
               res.json({success:false, error:"no tiene acceso a esta aplicacion"});
-        }).catch(error => res.json({success:false, error:'no tiene acceso a esta aplicacion'}));
+        }).catch(error => res.json({success:false, error:'no tiene acceso a este Reporte'}));
 
       }).catch(error => res.json({success:false, error:'Observacion no encontrada'}));
     }
