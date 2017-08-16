@@ -20,6 +20,11 @@ module.exports = function(app)
       UserController.update(req,res);
   });
 
+  app.post('/user/updateAnother', function(req, res)
+  {
+      UserController.updateUser(req,res);
+  });
+
   app.post('/logout', function (req,res)
   {
     req.session.destroy();

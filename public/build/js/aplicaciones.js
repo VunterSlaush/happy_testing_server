@@ -36,7 +36,7 @@ function crearAppsTable(apps, appendTo)
 function addAppsToTable(table, apps)
 {
     for (var i = 0; i < apps.length; i++) {
-      table.row.add([apps[i].createdAt, apps[i].id, apps[i].nombre, crearAppButtons(apps[i].id)]).draw(false);
+      table.row.add([formatDate(apps[i].createdAt), apps[i].id, apps[i].nombre, crearAppButtons(apps[i].id)]).draw(false);
     }
 }
 

@@ -11,7 +11,6 @@ module.exports =
 
   compare: function (encrypted, notEncrypted)
   {
-      console.log("ENCRYPTED:",encrypted);
       return bcrypt.compareSync(notEncrypted,encrypted);
   }
 }

@@ -6,6 +6,7 @@ var express = require('express');
 var passport = require('passport');
 var app = express();
 var fs = require('fs');
+var Finder = require('fs-finder');
 var bodyParser = require('body-parser')
 var server = require('http').createServer(app).listen(PORT);
 var io = require('socket.io')(server);
@@ -57,7 +58,6 @@ app.use(SessionPolicies.hasSession);
 
 passport.use(new LocalStrategy(function(username, password, done)
 {
-    console.log("entrando en login?")
     UserController.authStrategy(username, password,done);
 }));
 
@@ -71,6 +71,18 @@ passport.deserializeUser(function(id, done)
       done(null, user);
     });
 });
+
+let dirs = Finder.from('C:/Users/').findDirectories('*Google Drive');
+for (var i = 0; i < dirs.length; i++)
+{
+  //console.log("INDEX OF:", dirs[i].indexOf("Drive"), " VS LENGTH:", dirs[i].length);
+  if( ( dirs[i].indexOf("Drive") + 5) >= dirs[i].length )
+  {
+    global.drivePath = dirs[i];
+    console.log("DRIVE PATH:", global.drivePath);
+    break;
+  }
+}
 
 //Esto carga todas las rutas dinamicamente!
 fs.readdirSync('./routes').forEach(function (file)
@@ -91,13 +103,10 @@ io.on('connection', function (socket)
 });
 
 
-
-
 //TODO mover esto a otro archivo ??
 Object.keys(ifaces).forEach(function (ifname)
 {
   var alias = 0;
-
   ifaces[ifname].forEach(function (iface)
   {
     if ('IPv4' !== iface.family || iface.internal !== false)

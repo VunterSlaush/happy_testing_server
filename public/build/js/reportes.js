@@ -34,7 +34,7 @@ function crearReportTable(apps, appendTo,pages)
 function addReportsToTable(table, reports)
 {
     for (var i = 0; i < reports.length; i++) {
-      table.row.add([reports[i].createdAt, reports[i].id,reports[i].App.nombre, reports[i].nombre, crearReportsButtons(reports[i].id)]).draw(false);
+      table.row.add([formatDate(reports[i].createdAt), reports[i].id,reports[i].App.nombre, reports[i].nombre, crearReportsButtons(reports[i].id)]).draw(false);
     }
 }
 

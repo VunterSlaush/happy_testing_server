@@ -49,19 +49,35 @@ function fillObservations(observations)
 
 }
 
-function putObservationOnUI(observation) // TODO fix Text !
+function putObservationOnUI(observation)
 {
     let container = $("<li>",{id:"ob-"+observation.id, class:"dragdrop"});
-    let title = $("<h3>",{text:'"'+observation.texto+'"', style:"font-style: italic;"});
+
     let xIcon = $("<i>",{class:"fa fa-times"});
     let btnDelete = $("<a>",{onclick:"deleteObservation("+observation.id+"); return;", style:"font-size:3rem; margin-right:-3vw;", class:"col-md-1"});
     $(btnDelete).append(xIcon);
     $(container).append(btnDelete);
-    $(container).append(title);
+    let text = generateText(observation.texto);
+    $(container).append(text);
     let images = generateImages(observation.images);
     $(container).append(images);
-
     $("#bx_container").append(container);
+}
+
+function generateText(text)
+{
+  let container  = $("<div>");
+  let p;
+  let pivote = 120;
+  let b = 0;
+  while (pivote <= text.length)
+  {
+    $(container).append($("<p>",{text:text.substring(b,pivote), style:"font-style: italic; margin-top:0; padding-top:0; margin-bottom:0; padding-bottom:0;", class:"col-md-12"}));
+    b = pivote;
+    pivote += 120;
+  }
+  $(container).append($("<p>",{text:text.substring(b,text.length), style:"font-style: italic; margin-top:0; padding-top:0; margin-bottom:0; padding-bottom:0;", class:"col-md-12"}));
+  return container;
 }
 
 function generateImages(images)
@@ -287,7 +303,7 @@ function addImagesToObservation(images) //TODO posible refactor
 {
 
   let obId = images[0].observacion;
-  divCol = $("<div>", {class:"col-md-2", id:images[0].id});
+  divCol = $("<div>", {class:"col-md-2", id:"img-"+images[0].id});
   thumb = $("<div>",{class:"thumbnail"});
   imgView = $("<div>",{class:"image view view-first"});
   img = $("<img>",{style:"width: 100%; display: block;", src:images[0].direccion, alt:"image"});
@@ -307,6 +323,7 @@ function addImagesToObservation(images) //TODO posible refactor
   $(thumb).append(imgView);
   $(divCol).append(thumb);
   $("#ob-"+obId+" div.row").append(divCol);
+  slider.reloadSlider();
 }
 
 function removeImage(id)
@@ -326,6 +343,7 @@ function removeImage(id)
         {
           if (data.success)
           {
+            $("#img-"+id).remove();
             $("#img-"+id).remove();
           }
           else

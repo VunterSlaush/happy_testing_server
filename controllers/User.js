@@ -50,6 +50,22 @@ module.exports =
         });
     },
 
+    updateUser: function(req, res)
+    {
+        if(req.body.password != null)
+          req.body.password = encrypter.encrypt(req.body.password);
+
+        User.update(req.body,{ where:{id:req.body.id}, fields: ['username','nombre','password'] })
+        .then((userUpdated) => {
+          //req.user.username = req.body.username;
+          res.json({success:true, user:userUpdated});
+        })
+        .catch((error) =>
+        {
+          res.json({success:false, error:"no se pudieron actualizar algunos campos"});
+        });
+    },
+
     authStrategy: function (username, password, done)
     {
       User.findOne({where: {username:username}})
@@ -69,7 +85,7 @@ module.exports =
       });
     },
 
-    getApps: function (req, res) 
+    getApps: function (req, res)
     {
         req.user.getCanEditApps().then(canEdit =>
         {

@@ -1,5 +1,6 @@
 var officegen = require('officegen');
 var path = require('path');
+var mkdirp = require('mkdirp');
 var nodePath = __dirname.replace('\services','');
 var models = require('../models');
 var Observation = models.Observation;
@@ -9,12 +10,12 @@ var App = models.User;
 var fs = require('fs');
 
 
+
 module.exports =
 {
   createDocFromReport: function(report, callback)
   {
     var docx = officegen ('docx');
-    console.log(docx);
     Observation.findAll({ where:{reporte:report.id}, include:[{ model:Imagen, as: 'images'}]})
                .then(obs =>
                  {
@@ -30,8 +31,8 @@ module.exports =
                     {
                       var pObj = docx.createP ();
                       pObj.options.align = 'center';
-                      console.log("A;adiendo observacion:"+obs[i].texto);
-                      console.log("Imagenes:"+obs[i].images.length);
+                      //console.log("A;adiendo observacion:"+obs[i].texto);
+                      //console.log("Imagenes:"+obs[i].images.length);
                       for (var j = 0; j < obs[i].images.length; j++)
                       {
                         pObj.addImage(path.resolve(nodePath, obs[i].images[j].direccion.substring(1)), { cx: 250, cy: 350});
@@ -43,12 +44,21 @@ module.exports =
                         docx.putPageBreak();
                     }
                     var outDir = 'storage/apps/'+report.aplicacion+'/'+report.id+'/'+report.nombre+'.docx';
+
+                    let drivePath = global.drivePath+"/"+report.App.nombre;
+
                     var out =  fs.createWriteStream (nodePath+outDir.replace(/\s/g,''));
                     docx.generate(out);
+                    mkdirp(drivePath, function(err) {
+                      if(!err)
+                      {
+                        fs.createReadStream(outDir.replace(/\s/g,'')).pipe(fs.createWriteStream(drivePath+'/'+report.nombre+'.docx'));
+                      }
+                    });
+
                     callback(outDir.replace(/\s/g,''));
                  }).catch((error) =>
                  {
-                   console.log("Publish Report Error:", error);
                    callback(null);
                  });
 

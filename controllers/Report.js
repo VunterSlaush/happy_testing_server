@@ -86,7 +86,7 @@ module.exports =
 };
 
 
-function crearReporte(req,res) // TODO testear esto
+function crearReporte(req,res)
 {
 
 
@@ -111,7 +111,7 @@ function procesarObservaciones(req, reporte, images, callback)
     callback();
     return;
   }
-  
+
   let promises = [];
   req.body.observaciones = JSON.parse(req.body.observaciones);
   for (var i = 0; i < req.body.observaciones.length; i++)

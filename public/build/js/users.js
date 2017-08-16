@@ -27,17 +27,14 @@ function addUsersToTable(table, reports)
 function crearUsersButtons(id)
 {
   let container = $("<div>",{style:"padding:3px;"});
-  let seeButton = $("<a>",{onClick:"editarUser("+id+")", text:"Editar", style:" margin-right:5px;", class:"btn btn-primary"});
+  let seeButton = $("<a>",{href:"#edit_user/"+id, text:"Editar", style:" margin-right:5px;", class:"btn btn-primary"});
   let delButton = $("<a>",{onClick:"eliminarUser(this,"+id+")", text:"Eliminar", style:" margin-right:5px;", class:"btn btn-danger"});
   $(container).append(seeButton);
   $(container).append(delButton);
   return $(container).html();
 }
 
-function editarUser(id)
-{
-    //TODO
-}
+
 
 function eliminarUser(button,id)
 {

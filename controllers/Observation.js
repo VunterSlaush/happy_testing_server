@@ -42,6 +42,6 @@ module.exports =
 
               }) .catch(error => res.json({success:false, error:"error al eliminar"}));
 
-          }).catch(error => res.json({success:false, error:'reporte no encontrado'}));
+          }).catch(error => res.json({success:false, error:'observacion no encontrada'}));
     }
 };

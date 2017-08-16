@@ -11,6 +11,7 @@ function init_select2()
       url: "/users",
       dataType: 'json',
       delay: 250,
+      language: "es",
       data: function (params) {
         return {
           q: params.term, // search term
@@ -33,8 +34,8 @@ function init_select2()
     },
     escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
     minimumInputLength: 1,
-    templateResult: formatUser, // omitted for brevity, see the source of this page
-    templateSelection: formatUserSelection // omitted for brevity, see the source of this page
+    templateResult: formatUser,
+    templateSelection: formatUserSelection
   });
 }
 
@@ -51,7 +52,7 @@ function formatUser (user)
 
 function formatUserSelection (user)
 {
-    return user.id;
+    return "@"+user.username;
 }
 
 function userMatch(users,term)
