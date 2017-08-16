@@ -31,8 +31,7 @@ module.exports =
                     {
                       var pObj = docx.createP ();
                       pObj.options.align = 'center';
-                      //console.log("A;adiendo observacion:"+obs[i].texto);
-                      //console.log("Imagenes:"+obs[i].images.length);
+
                       for (var j = 0; j < obs[i].images.length; j++)
                       {
                         pObj.addImage(path.resolve(nodePath, obs[i].images[j].direccion.substring(1)), { cx: 250, cy: 350});
@@ -43,20 +42,37 @@ module.exports =
                       if((i+1) % 2 == 0)
                         docx.putPageBreak();
                     }
+                    mkdirp(drivePath, function(err)
+                    {
+
+                    });
                     var outDir = 'storage/apps/'+report.aplicacion+'/'+report.id+'/'+report.nombre+'.docx';
 
-                    let drivePath = global.drivePath+"/"+report.App.nombre;
-
-                    var out =  fs.createWriteStream (nodePath+outDir.replace(/\s/g,''));
-                    docx.generate(out);
-                    mkdirp(drivePath, function(err) {
-                      if(!err)
+                    mkdirp('storage/apps/'+report.aplicacion+'/'+report.id, function(err)
+                    {
+                      if (!err)
                       {
-                        fs.createReadStream(outDir.replace(/\s/g,'')).pipe(fs.createWriteStream(drivePath+'/'+report.nombre+'.docx'));
+
+                        let drivePath = global.drivePath+"/"+report.App.nombre;
+                        var out =  fs.createWriteStream (nodePath+outDir.replace(/\s/g,''));
+                        docx.generate(out);
+                        mkdirp(drivePath, function(err)
+                        {
+                          if(!err)
+                          {
+                            fs.createReadStream(outDir.replace(/\s/g,'')).pipe(fs.createWriteStream(drivePath+'/'+report.nombre+'.docx'));
+                          }
+                        });
+
+                        callback(outDir.replace(/\s/g,''));
+
+                      }
+                      else
+                      {
+                        callback(null);
                       }
                     });
 
-                    callback(outDir.replace(/\s/g,''));
                  }).catch((error) =>
                  {
                    callback(null);

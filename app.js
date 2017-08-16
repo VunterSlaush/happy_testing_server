@@ -8,6 +8,7 @@ var app = express();
 var fs = require('fs');
 var Finder = require('fs-finder');
 var bodyParser = require('body-parser')
+var path = require('path');
 var server = require('http').createServer(app).listen(PORT);
 var io = require('socket.io')(server);
 const fileUpload = require('express-fileupload');
@@ -72,10 +73,11 @@ passport.deserializeUser(function(id, done)
     });
 });
 
-let dirs = Finder.from('C:/Users/').findDirectories('*Google Drive');
+var userName = process.env['USERPROFILE'].split(path.sep)[2];
+console.log("USERNAME",userName);
+let dirs = Finder.from('C:/Users/'+userName).findDirectories('*Google Drive');
 for (var i = 0; i < dirs.length; i++)
 {
-  //console.log("INDEX OF:", dirs[i].indexOf("Drive"), " VS LENGTH:", dirs[i].length);
   if( ( dirs[i].indexOf("Drive") + 5) >= dirs[i].length )
   {
     global.drivePath = dirs[i];
